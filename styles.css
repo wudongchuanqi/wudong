@@ -61,53 +61,43 @@ button:hover {
 }
 
 .option-button {
-    background-color: white;
-    color: orange;
-    border: 1px solid #FF5722;
+    background-color: #FF5722;
+    color: white;
+    border: none;
     padding: 10px 20px;
-    font-size: 18px;
-    margin: 10px;
+    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    margin: 5px;
 }
 
 .option-button:hover {
-    background-color: #FF5722;
-    color: white;
-}
-
-#timer {
-    margin-top: 20px;
-    font-size: 20px;
+    background-color: #E64A19;
 }
 
 #feedback {
-    font-size: 20px;
+    font-size: 18px;
     margin-top: 10px;
-    color: green;
 }
 
-#history {
+#time {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
 }
 
-#history table {
-    width: 100%;
-    border-collapse: collapse;
+table, th, td {
+    border: 1px solid #ccc;
 }
 
-#history th, #history td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-#history th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    background-color: #f2f2f2;
-    color: black;
+th, td {
+    padding: 10px;
+    text-align: center;
 }
 
 #history tr:nth-child(even) {
@@ -119,9 +109,6 @@ button:hover {
 }
 
 #history th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
+    background-color: #FF5722;
     color: white;
 }
