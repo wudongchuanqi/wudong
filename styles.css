@@ -58,7 +58,7 @@ button:hover {
 
 .option-button {
     background-color: white;
-    color: #FF5722;
+    color: white; /* 设置初始字体颜色与背景颜色相同，使内容不可见 */
     border: 1px solid #FF5722;
     padding: 10px 20px;
     font-size: 18px;
@@ -70,8 +70,9 @@ button:hover {
 
 .option-button:hover {
     background-color: #FF5722;
-    color: white;
+    color: white; /* 悬停时字体颜色变为白色，使内容可见 */
 }
+
 
 #settingsForm, #game {
     display: none;
