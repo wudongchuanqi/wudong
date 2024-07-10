@@ -37,17 +37,18 @@ function showQuestion() {
         currentQuestion.options.forEach(option => {
             const button = document.createElement('button');
             button.innerText = option;
-            button.onclick = () => checkAnswer(option);
             button.className = 'option-button';
+            button.onclick = () => checkAnswer(option);
             optionsContainer.appendChild(button);
         });
     } else if (mode === 'answer') {
+        // 保留一个正确答案的选项，初始显示“？”
         const button = document.createElement('button');
-        button.innerText = '？';
-        button.onmouseover = () => button.innerText = currentQuestion.answer;
-        button.onmouseout = () => button.innerText = '？';
-        button.onclick = () => checkAnswer(currentQuestion.answer);
+        button.innerText = '?';
         button.className = 'option-button';
+        button.onmouseover = () => button.innerText = currentQuestion.answer;
+        button.onmouseout = () => button.innerText = '?';
+        button.onclick = () => checkAnswer(currentQuestion.answer);
         optionsContainer.appendChild(button);
     }
 
