@@ -44,15 +44,14 @@ function showQuestion() {
             optionsContainer.appendChild(button);
         });
     } else if (mode === 'answer') {
-        // 保留一个正确答案的选项，初始显示“？”
-        const button = document.createElement('button');
-        button.innerText = '?';
-        button.className = 'option-button';
-        button.onmouseover = () => button.innerText = currentQuestion.answer;
-        button.onmouseout = () => button.innerText = '?';
-        button.onclick = () => checkAnswer(currentQuestion.answer);
-        optionsContainer.appendChild(button);
-    }
+    const button = document.createElement('button');
+    button.innerText = '?'; // 初始显示“？”
+    button.className = 'option-button';
+    button.onmouseover = () => button.innerText = currentQuestion.answer; // 悬停时显示正确答案
+    button.onmouseout = () => button.innerText = '?'; // 移出悬停时恢复显示“？”
+    button.onclick = () => checkAnswer(currentQuestion.answer);
+    optionsContainer.appendChild(button);
+}
 
     document.getElementById('feedback').innerText = '';
     startTimer();
