@@ -57,23 +57,20 @@ button:hover {
 }
 
 .option-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+    background-color: white;
+    color: #FF5722;
+    border: 1px solid #FF5722;
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 10px;
+    border-radius: 5px;
     cursor: pointer;
-    border-radius: 12px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .option-button:hover {
-    background-color: #45a049;
-    color: yellow;
+    background-color: #FF5722;
+    color: white;
 }
 
 #settingsForm, #game {
