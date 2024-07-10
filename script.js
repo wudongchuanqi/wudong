@@ -36,8 +36,10 @@ function showQuestion() {
     if (mode === 'selection') {
         currentQuestion.options.forEach(option => {
             const button = document.createElement('button');
-            button.innerText = option;
+            button.innerText = ''; // 初始内容为空
             button.className = 'option-button';
+            button.onmouseover = () => button.innerText = option; // 悬停时显示选项
+            button.onmouseout = () => button.innerText = ''; // 移出悬停时隐藏选项
             button.onclick = () => checkAnswer(option);
             optionsContainer.appendChild(button);
         });
@@ -215,7 +217,5 @@ function clearHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('settingsForm').style.display = 'block';
-    document.getElementById('game').style.display = 'none';
     displayHistory();
 });
