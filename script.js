@@ -52,7 +52,6 @@ function showQuestion() {
     button.onclick = () => checkAnswer(currentQuestion.answer);
     optionsContainer.appendChild(button);
 }
-
     document.getElementById('feedback').innerText = '';
     startTimer();
 }
