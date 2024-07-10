@@ -215,5 +215,7 @@ function clearHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('settingsForm').style.display = 'block';
+    document.getElementById('game').style.display = 'none';
     displayHistory();
 });
