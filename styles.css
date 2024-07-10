@@ -56,9 +56,10 @@ button:hover {
     background-color: #45a049;
 }
 
+/* 添加新的样式 */
 .option-button {
     background-color: white;
-    color: orange; /* 设置初始字体颜色 */
+    color: orange;
     border: 1px solid #FF5722;
     padding: 10px 20px;
     font-size: 18px;
@@ -70,7 +71,7 @@ button:hover {
 
 .option-button:hover {
     background-color: #FF5722;
-    color: white; /* 悬停时字体颜色变为白色 */
+    color: white;
 }
 
 #settingsForm, #game {
