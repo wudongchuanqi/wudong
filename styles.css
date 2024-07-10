@@ -77,6 +77,7 @@ button:hover {
 #options button:hover, #options button:focus {
     background-color: #FF5722;
     color: #fff;
+    transform: scale(1.1); /* 按钮放大效果 */
 }
 
 #timer {
@@ -101,6 +102,7 @@ button:hover {
 #history th {
     padding-top: 12px;
     padding-bottom: 12px;
+    text-align: left;
     background-color: #FF5722;
     color: white;
 }
