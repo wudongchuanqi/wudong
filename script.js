@@ -55,7 +55,6 @@ function showQuestion() {
     startTimer();
 }
 
-
 function startTimer() {
     let timeLeft = timePerQuestion;
     document.getElementById('time').innerText = timeLeft;
@@ -88,124 +87,125 @@ function checkAnswer(selectedOption) {
     currentQuestionIndex++;
 
     if (currentQuestionIndex < questions.length) {
-        setTimeout(showQuestion, 2000); 
+        setTimeout(showQuestion, 1000);
     } else {
-        setTimeout(endGame, 2000); 
+        setTimeout(endGame, 1000);
     }
 }
 
 function endGame() {
     document.getElementById('game').style.display = 'none';
-    const scorePercentage = (score / questions.length) * 100;
-    const finalScore = Math.round(scorePercentage);
-    const result = document.createElement('div');
-    let encouragement = '';
-
-    if (finalScore === 100) {
-        const messages = ['太棒了!', '优秀!', '满分，继续努力!'];
-        encouragement = messages[Math.floor(Math.random() * messages.length)];
-    }
-
-    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${finalScore}分，正确率为: ${scorePercentage.toFixed(2)}%</p><p>${encouragement}</p>`;
-    document.body.appendChild(result);
-
-    history.push({ date: new Date().toLocaleString(), score: finalScore, accuracy: scorePercentage.toFixed(2) });
-    localStorage.setItem('history', JSON.stringify(history));
-
-    displayHistory();
+    document.getElementById('settingsForm').style.display = 'block';
+    alert(`游戏结束! 你的得分是 ${score} / ${questions.length}`);
+    saveHistory(score, questions.length);
 }
 
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
+
     for (let i = 0; i < numQuestions; i++) {
-        let question, answer;
-        let num1, num2;
+        let question = {};
+        let a, b, answer;
 
-        do {
-            num1 = Math.floor(Math.random() * (range + 1));
-            num2 = Math.floor(Math.random() * (range + 1));
-            switch (operation) {
-                case 'addition':
-                    question = `${num1} + ${num2}`;
-                    answer = num1 + num2;
-                    break;
-                case 'subtraction':
-                    question = `${num1} - ${num2}`;
-                    answer = num1 - num2;
-                    break;
-                case 'multiplication':
-                    question = `${num1} × ${num2}`;
-                    answer = num1 * num2;
-                    break;
-                case 'division':
-                    num2 = num2 === 0 ? 1 : num2;
-                    question = `${num1} ÷ ${num2}`;
-                    answer = allowDecimals ? parseFloat((num1 / num2).toFixed(2)) : Math.floor(num1 / num2);
-                    break;
-                case 'mixed':
-                    const ops = ['+', '-', '×', '÷'];
-                    const op = ops[Math.floor(Math.random() * ops.length)];
-                    switch (op) {
-                        case '+':
-                            question = `${num1} + ${num2}`;
-                            answer = num1 + num2;
-                            break;
-                        case '-':
-                            question = `${num1} - ${num2}`;
-                            answer = num1 - num2;
-                            break;
-                        case '×':
-                            question = `${num1} × ${num2}`;
-                            answer = num1 * num2;
-                            break;
-                        case '÷':
-                            num2 = num2 === 0 ? 1 : num2;
-                            question = `${num1} ÷ ${num2}`;
-                            answer = allowDecimals ? parseFloat((num1 / num2).toFixed(2)) : Math.floor(num1 / num2);
-                            break;
-                    }
-                    break;
-            }
-        } while ((!allowNegative && answer < 0) || answer > resultRange);
+        if (operation === 'addition') {
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = a + b;
+            question.question = `${a} + ${b} = ?`;
+        } else if (operation === 'subtraction') {
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = a - b;
+            question.question = `${a} - ${b} = ?`;
+        } else if (operation === 'multiplication') {
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = a * b;
+            question.question = `${a} * ${b} = ?`;
+        } else if (operation === 'division') {
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
+            a = b * answer;
+            question.question = `${a} / ${b} = ?`;
+        } else if (operation === 'mixed') {
+            const operations = ['addition', 'subtraction', 'multiplication', 'division'];
+            const randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
+        }
 
-        const options = generateOptions(answer, resultRange, allowDecimals);
-        questions.push({ question, answer, options });
+        if (operation !== 'division') {
+            question.answer = allowDecimals ? parseFloat(answer.toFixed(2)) : answer;
+        } else {
+            question.answer = answer;
+        }
+
+        if (mode === 'selection') {
+            question.options = generateOptions(question.answer, allowDecimals);
+        }
+
+        questions.push(question);
     }
+
     return questions;
 }
 
-function generateOptions(correctAnswer, range, allowDecimals) {
+function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
-    while (options.length < 3) {
-        let option;
-        if (allowDecimals) {
-            option = parseFloat((Math.random() * range).toFixed(2));
-        } else {
-            option = Math.floor(Math.random() * (range + 1));
-        }
+
+    while (options.length < 4) {
+        let option = getRandomNumber(correctAnswer * 2, allowDecimals, false);
+
         if (!options.includes(option)) {
             options.push(option);
         }
     }
+
     return options.sort(() => Math.random() - 0.5);
 }
 
-function displayHistory() {
-    const historyContainer = document.getElementById('history');
-    historyContainer.innerHTML = '<h3>历史记录</h3>';
+function getRandomNumber(max, allowDecimals, allowNegative) {
+    let number = Math.random() * max;
 
-    if (history.length === 0) {
-        historyContainer.innerHTML += '<p>暂无记录</p>';
-    } else {
-        const table = document.createElement('table');
-        table.innerHTML = '<tr><th>日期</th><th>得分</th><th>正确率</th></tr>';
-        history.forEach(record => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${record.date}</td><td>${record.score}</td><td>${record.accuracy}%</td>`;
-            table.appendChild(row);
-        });
-        historyContainer.appendChild(table);
+    if (!allowDecimals) {
+        number = Math.floor(number);
     }
+
+    if (allowNegative && Math.random() < 0.5) {
+        number = -number;
+    }
+
+    return number;
+}
+
+function saveHistory(score, total) {
+    const record = { date: new Date().toLocaleString(), score, total };
+    history.push(record);
+    localStorage.setItem('history', JSON.stringify(history));
+    displayHistory();
+}
+
+function displayHistory() {
+    const historyTable = document.createElement('table');
+    historyTable.innerHTML = `
+        <tr>
+            <th>日期</th>
+            <th>分数</th>
+            <th>总题数</th>
+        </tr>
+    `;
+
+    history.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${record.date}</td>
+            <td>${record.score}</td>
+            <td>${record.total}</td>
+        `;
+        historyTable.appendChild(row);
+    });
+
+    document.getElementById('history').innerHTML = '';
+    document.getElementById('history').appendChild(historyTable);
 }
 
 function clearHistory() {
@@ -214,6 +214,5 @@ function clearHistory() {
     displayHistory();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    displayHistory();
-});
+// 初始加载显示历史记录
+displayHistory();
