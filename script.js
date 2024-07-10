@@ -37,17 +37,17 @@ function showQuestion() {
         currentQuestion.options.forEach(option => {
             const button = document.createElement('button');
             button.innerText = option;
-            button.className = 'option-button'; // 添加类名
             button.onclick = () => checkAnswer(option);
             optionsContainer.appendChild(button);
         });
     } else if (mode === 'answer') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'userAnswer';
+        optionsContainer.appendChild(input);
         const button = document.createElement('button');
-        button.innerText = '?';
-        button.className = 'answer-button'; // 添加类名
-        button.onmouseover = () => button.innerText = currentQuestion.answer;
-        button.onmouseout = () => button.innerText = '?';
-        button.onclick = () => checkAnswer(currentQuestion.answer);
+        button.innerText = '提交';
+        button.onclick = () => checkAnswer(input.value);
         optionsContainer.appendChild(button);
     }
 
@@ -64,7 +64,7 @@ function startTimer() {
             timeLeft--;
             document.getElementById('time').innerText = timeLeft;
         } else {
-            checkAnswer(null);
+            checkAnswer(null); 
         }
     }, 1000);
 }
@@ -87,9 +87,9 @@ function checkAnswer(selectedOption) {
     currentQuestionIndex++;
 
     if (currentQuestionIndex < questions.length) {
-        setTimeout(showQuestion, 2000);
+        setTimeout(showQuestion, 2000); 
     } else {
-        setTimeout(endGame, 2000);
+        setTimeout(endGame, 2000); 
     }
 }
 
@@ -105,114 +105,153 @@ function endGame() {
         encouragement = messages[Math.floor(Math.random() * messages.length)];
     }
 
-    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${finalScore}分，正确率为: ${scorePercentage.toFixed(2)}%</p><p>${encouragement}</p>`;
+    result.innerHTML = `<h2>游戏结束!</h2><p>您的得分是: ${score}/${questions.length}</p><p>${encouragement}</p>`;
     document.body.appendChild(result);
 
-    history.push({ date: new Date().toLocaleString(), score: finalScore, accuracy: scorePercentage.toFixed(2) });
-    localStorage.setItem('history', JSON.stringify(history));
+    // 保存结果到历史记录
+    saveToHistory(finalScore);
 
-    displayHistory();
+    setTimeout(() => {
+        document.body.removeChild(result);
+        document.getElementById('settingsForm').style.display = 'block';
+    }, 5000); 
 }
 
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
     for (let i = 0; i < numQuestions; i++) {
-        let question, answer;
-        let num1, num2;
-
-        do {
-            num1 = Math.floor(Math.random() * (range + 1));
-            num2 = Math.floor(Math.random() * (range + 1));
-            switch (operation) {
-                case 'addition':
-                    question = `${num1} + ${num2}`;
-                    answer = num1 + num2;
-                    break;
-                case 'subtraction':
-                    question = `${num1} - ${num2}`;
-                    answer = num1 - num2;
-                    break;
-                case 'multiplication':
-                    question = `${num1} × ${num2}`;
-                    answer = num1 * num2;
-                    break;
-                case 'division':
-                    num2 = num2 === 0 ? 1 : num2;
-                    question = `${num1} ÷ ${num2}`;
-                    answer = allowDecimals ? parseFloat((num1 / num2).toFixed(2)) : Math.floor(num1 / num2);
-                    break;
-                case 'mixed':
-                    const ops = ['+', '-', '×', '÷'];
-                    const op = ops[Math.floor(Math.random() * ops.length)];
-                    switch (op) {
-                        case '+':
-                            question = `${num1} + ${num2}`;
-                            answer = num1 + num2;
-                            break;
-                        case '-':
-                            question = `${num1} - ${num2}`;
-                            answer = num1 - num2;
-                            break;
-                        case '×':
-                            question = `${num1} × ${num2}`;
-                            answer = num1 * num2;
-                            break;
-                        case '÷':
-                            num2 = num2 === 0 ? 1 : num2;
-                            question = `${num1} ÷ ${num2}`;
-                            answer = allowDecimals ? parseFloat((num1 / num2).toFixed(2)) : Math.floor(num1 / num2);
-                            break;
-                    }
-                    break;
-            }
-        } while ((!allowNegative && answer < 0) || answer > resultRange);
-
-        const options = generateOptions(answer, resultRange, allowDecimals);
-        questions.push({ question, answer, options });
+        const question = createQuestion(operation, range, resultRange, allowDecimals, allowNegative);
+        questions.push(question);
     }
     return questions;
 }
 
-function generateOptions(correctAnswer, range, allowDecimals) {
+function createQuestion(operation, range, resultRange, allowDecimals, allowNegative) {
+    let num1, num2, question, answer;
+
+    switch (operation) {
+        case 'addition':
+            num1 = getRandomNumber(range, allowDecimals, allowNegative);
+            num2 = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = num1 + num2;
+            question = `${num1} + ${num2} = ?`;
+            break;
+        case 'subtraction':
+            num1 = getRandomNumber(range, allowDecimals, allowNegative);
+            num2 = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = num1 - num2;
+            question = `${num1} - ${num2} = ?`;
+            break;
+        case 'multiplication':
+            num1 = getRandomNumber(range, allowDecimals, allowNegative);
+            num2 = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = num1 * num2;
+            question = `${num1} * ${num2} = ?`;
+            break;
+        case 'division':
+            num1 = getRandomNumber(range, allowDecimals, allowNegative);
+            num2 = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = num1 / num2;
+            question = `${num1} / ${num2} = ?`;
+            break;
+        case 'mixed':
+            const operations = ['addition', 'subtraction', 'multiplication', 'division'];
+            const randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            return createQuestion(randomOperation, range, resultRange, allowDecimals, allowNegative);
+    }
+
+    if (!allowNegative) {
+        answer = Math.abs(answer);
+    }
+
+    if (!allowDecimals) {
+        answer = Math.round(answer);
+    }
+
+    const options = generateOptions(answer, resultRange);
+    return { question, answer, options };
+}
+
+function getRandomNumber(range, allowDecimals, allowNegative) {
+    let number = Math.random() * range;
+    if (allowDecimals) {
+        number = parseFloat(number.toFixed(2));
+    } else {
+        number = Math.round(number);
+    }
+    if (allowNegative && Math.random() < 0.5) {
+        number *= -1;
+    }
+    return number;
+}
+
+function generateOptions(correctAnswer, resultRange) {
     const options = [correctAnswer];
-    while (options.length < 3) {
-        let option;
-        if (allowDecimals) {
-            option = parseFloat((Math.random() * range).toFixed(2));
-        } else {
-            option = Math.floor(Math.random() * (range + 1));
-        }
+    while (options.length < 4) {
+        let option = getRandomNumber(resultRange, false, false);
         if (!options.includes(option)) {
             options.push(option);
         }
     }
-    return options.sort(() => Math.random() - 0.5);
+    return shuffleArray(options);
 }
 
-function displayHistory() {
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// 保存结果到历史记录
+function saveToHistory(score) {
+    const date = new Date().toLocaleString();
+    history.push({ date, score });
+    localStorage.setItem('history', JSON.stringify(history));
+    renderHistory();
+}
+
+// 渲染历史记录
+function renderHistory() {
     const historyContainer = document.getElementById('history');
     historyContainer.innerHTML = '<h3>历史记录</h3>';
+    const table = document.createElement('table');
+    historyContainer.appendChild(table);
+    const thead = document.createElement('thead');
+    table.appendChild(thead);
+    const headerRow = document.createElement('tr');
+    thead.appendChild(headerRow);
+    const dateHeader = document.createElement('th');
+    dateHeader.innerText = '日期';
+    headerRow.appendChild(dateHeader);
+    const scoreHeader = document.createElement('th');
+    scoreHeader.innerText = '得分';
+    headerRow.appendChild(scoreHeader);
 
-    if (history.length === 0) {
-        historyContainer.innerHTML += '<p>暂无记录</p>';
-    } else {
-        const table = document.createElement('table');
-        table.innerHTML = '<tr><th>日期</th><th>得分</th><th>正确率</th></tr>';
-        history.forEach(record => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${record.date}</td><td>${record.score}</td><td>${record.accuracy}%</td>`;
-            table.appendChild(row);
-        });
-        historyContainer.appendChild(table);
-    }
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+
+    history.forEach(record => {
+        const row = document.createElement('tr');
+        tbody.appendChild(row);
+        const dateCell = document.createElement('td');
+        dateCell.innerText = record.date;
+        row.appendChild(dateCell);
+        const scoreCell = document.createElement('td');
+        scoreCell.innerText = `${record.score}%`;
+        row.appendChild(scoreCell);
+    });
 }
 
+// 清除历史记录
 function clearHistory() {
-    localStorage.removeItem('history');
     history = [];
-    displayHistory();
+    localStorage.removeItem('history');
+    renderHistory();
 }
 
+// 初始化历史记录
 document.addEventListener('DOMContentLoaded', () => {
-    displayHistory();
+    renderHistory();
 });
