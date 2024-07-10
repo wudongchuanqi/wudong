@@ -38,6 +38,7 @@ function showQuestion() {
             const button = document.createElement('button');
             button.innerText = option;
             button.onclick = () => checkAnswer(option);
+            button.className = 'option-button';
             optionsContainer.appendChild(button);
         });
     } else if (mode === 'answer') {
@@ -46,6 +47,7 @@ function showQuestion() {
         button.onmouseover = () => button.innerText = currentQuestion.answer;
         button.onmouseout = () => button.innerText = '？';
         button.onclick = () => checkAnswer(currentQuestion.answer);
+        button.className = 'option-button';
         optionsContainer.appendChild(button);
     }
 
