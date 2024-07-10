@@ -38,57 +38,67 @@ form input, form select {
 }
 
 button {
-    background-color: #FF5722;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
     font-size: 16px;
-    border-radius: 5px;
+    margin: 4px 2px;
     cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #E64A19;
+    background-color: #45a049;
 }
 
-#game {
-    margin-top: 20px;
-}
-
-#question {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-#options button {
-    display: block;
-    width: calc(100% - 40px); /* 调整宽度以适应新内边距 */
-    margin: 10px auto;
-    padding: 10px;
-    font-size: 18px;
-    border: 1px solid #FF5722;
-    border-radius: 5px;
-    background-color: #fff;
+.option-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin-left: 20px; /* 新增左边距 */
+    border-radius: 12px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-#options button:hover, #options button:focus {
-    background-color: #FF5722;
-    color: #fff;
-    transform: scale(1.1); /* 按钮放大效果 */
+.option-button:hover {
+    background-color: #45a049;
+    color: yellow;
 }
 
-#timer {
-    margin-top: 20px;
-    font-size: 20px;
+#settingsForm, #game {
+    display: none;
 }
 
 #feedback {
-    font-size: 20px;
-    margin-top: 10px;
-    color: green;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+#time {
+    font-size: 24px;
+    color: red;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
 }
 
 #history tr:nth-child(even) {
@@ -102,7 +112,6 @@ button:hover {
 #history th {
     padding-top: 12px;
     padding-bottom: 12px;
-    text-align: left;
-    background-color: #FF5722;
+    background-color: #4CAF50;
     color: white;
 }
