@@ -209,7 +209,8 @@ function getRandomNumber(max, allowDecimals, allowNegative) {
     if (!allowDecimals) {
         number = Math.floor(number);
     } else {
-        number = parseFloat(number.toFixed(1)); // 保留一位小数
+        number = parseFloat(number.toFixed(1)); 
+    // 保留一位小数
     }
     // 如果允许负数，则随机生成正负号
     if (allowNegative && Math.random() < 0.5) {
