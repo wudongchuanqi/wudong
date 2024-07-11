@@ -4,7 +4,13 @@ let currentQuestionIndex = 0;
 let score = 0;
 let timer;
 let timePerQuestion;
-let mode;
+let mode = 'selection'; // 或 'answer'，根据你的需求设置默认值
+let operation = 'addition'; // 或 'subtraction', 'multiplication', 'division', 'mixed'
+let range = 10; // 题目范围，根据你的需求设置
+let resultRange = 10; // 答案范围，根据你的需求设置
+let numQuestions = 10; // 题目数量，根据你的需求设置
+let allowDecimals = false; // 是否允许小数，根据你的需求设置
+let allowNegative = false; // 是否允许负数，根据你的需求设置
 
 // 历史统计数据
 let history = JSON.parse(localStorage.getItem('history')) || [];
