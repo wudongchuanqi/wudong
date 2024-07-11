@@ -125,22 +125,22 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a + b;
-            question.question = `${formatNumber(a)} + ${formatNumber(b)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a - b;
-            question.question = `${formatNumber(a)} - ${formatNumber(b)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a * b;
-            question.question = `${formatNumber(a)} * ${formatNumber(b)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
             a = b * answer;
-            question.question = `${formatNumber(a)} / ${formatNumber(b)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
@@ -161,7 +161,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
     return questions;
 }
 // 格式化数字，处理负数和小数的显示
-function formatNumber(number) {
+function formatNumber(number, allowDecimals) {
     if (allowDecimals) {
         return number.toFixed(1); // 保留一位小数
     } else {
