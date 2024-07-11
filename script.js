@@ -83,7 +83,7 @@ function checkAnswer(selectedOption) {
     const currentQuestion = questions[currentQuestionIndex];
     const feedback = document.getElementById('feedback');
 
-    if (selectedOption == currentQuestion.answer) {
+    if (parseFloat(selectedOption) === currentQuestion.answer) {
         score++;
         feedback.innerText = '正确!';
         feedback.style.color = 'green';
@@ -100,6 +100,7 @@ function checkAnswer(selectedOption) {
         setTimeout(endGame, 1000);
     }
 }
+
 
 // 结束游戏函数
 function endGame() {
@@ -144,19 +145,16 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
         }
 
-        // 如果不是除法，则处理小数
         if (operation !== 'division') {
             question.answer = allowDecimals ? parseFloat(answer.toFixed(2)) : answer;
         } else {
             question.answer = answer;
         }
 
-        // 如果是选择模式，生成选项
         if (mode === 'selection') {
             question.options = generateOptions(question.answer, allowDecimals);
         }
 
-        // 添加调试信息
         console.log(`Generated question: ${question.question}, answer: ${question.answer}`); 
         questions.push(question);
     }
@@ -186,7 +184,7 @@ function generateOptions(correctAnswer, allowDecimals) {
         }
 
         // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option <= correctAnswer) {
+        if (!options.includes(option) && option > 0 && option <= correctAnswer) { // 确保选项不重复且在合理范围内
             options.push(option);
         }
     }
