@@ -1,4 +1,4 @@
-// 全局变量声明
+// 全局变量
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
@@ -11,6 +11,33 @@ let resultRange = 10; // 答案范围，根据你的需求设置
 let numQuestions = 10; // 题目数量，根据你的需求设置
 let allowDecimals = false; // 是否允许小数，根据你的需求设置
 let allowNegative = false; // 是否允许负数，根据你的需求设置
+
+// 初始化题目并显示第一题
+questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
+showQuestion(questions[currentQuestionIndex]);
+
+// 显示题目函数
+function showQuestion(questionObj) {
+    // 检查 questionObj 是否为有效对象
+    if (!questionObj || !questionObj.question) {
+        console.error("Invalid question object:", questionObj);
+        return;
+    }
+
+    // 显示题目内容
+    const questionElement = document.getElementById('question');
+    questionElement.textContent = questionObj.question;
+
+    // 如果是选择模式，显示选项
+    if (mode === 'selection') {
+        const options = questionObj.options;
+        for (let i = 0; i < options.length; i++) {
+            const optionElement = document.getElementById(`option${i + 1}`);
+            optionElement.textContent = options[i];
+        }
+    }
+}
+
 
 // 历史统计数据
 let history = JSON.parse(localStorage.getItem('history')) || [];
