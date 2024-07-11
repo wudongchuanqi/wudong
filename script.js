@@ -146,10 +146,8 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
             return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
         }
-
         // 处理答案的格式，小数保留一位
         question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
-
         // 如果是选择模式，生成选项
         if (mode === 'selection') {
             question.options = generateOptions(question.answer, allowDecimals);
@@ -159,6 +157,8 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
     }
 
     return questions;
+}
+
 }
 // 格式化数字，处理负数和小数的显示
 function formatNumber(number, allowDecimals) {
@@ -177,21 +177,20 @@ function formatNumber(number, allowDecimals) {
  * @returns {Array<number>} 返回包含正确答案和三个随机选项的数组
  */
 // 生成选项的函数
+
 function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
     const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
 
     while (options.length < 4) {
         let option = getRandomNumber(range, allowDecimals, false);
-
         // 如果允许小数，随机调整选项的小数部分
         if (allowDecimals) {
             option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
             option = parseFloat(option.toFixed(1));
         }
-
         // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option > 0 && option <= correctAnswer) { // 确保选项不重复且在合理范围内
+        if (!options.includes(option) && option > 0 && option <= correctAnswer) {// 确保选项不重复且在合理范围内
             options.push(option);
         }
     }
