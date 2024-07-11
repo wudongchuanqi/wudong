@@ -91,9 +91,6 @@ function endGame() {
 // 修改生成题目的函数，保留一位小数
 // 修改生成题目的函数，处理负数和小数的显示
 // 修改生成题目的函数，处理负数和小数的显示
-let questions = [];
-let currentQuestionIndex = 0;
-
 // 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const newQuestions = [];
