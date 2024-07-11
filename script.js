@@ -76,30 +76,6 @@ function startTimer() {
     }, 1000);
 }
 
-// 检查答案函数
-function checkAnswer(selectedOption) {
-    clearInterval(timer);
-
-    const currentQuestion = questions[currentQuestionIndex];
-    const feedback = document.getElementById('feedback');
-
-    if (parseFloat(selectedOption) === currentQuestion.answer) {
-        score++;
-        feedback.innerText = '正确!';
-        feedback.style.color = 'green';
-    } else {
-        feedback.innerText = `错误! 正确答案是: ${currentQuestion.answer}`;
-        feedback.style.color = 'red';
-    }
-
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex < questions.length) {
-        setTimeout(showQuestion, 1000);
-    } else {
-        setTimeout(endGame, 1000);
-    }
-}
 
 
 // 结束游戏函数
@@ -158,11 +134,66 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
         questions.push(question);
     }
-
+    // 返回生成的题目数组
     return questions;
 }
 
-// 格式化数字，处理负数和小数的显示
+// 显示题目函数
+function showQuestion(question) {
+    document.getElementById('question').innerText = question.question;
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+
+    if (mode === 'selection') {
+        question.options.forEach(option => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('option-button');
+            button.onclick = () => checkAnswer(option);
+            optionsContainer.appendChild(button);
+        });
+    } else if (mode === 'answer') {
+        const button = document.createElement('button');
+        button.innerText = '?';
+        button.classList.add('option-button');
+        button.onclick = () => checkAnswer(question.answer);
+        button.onmouseover = () => button.innerText = question.answer;
+        button.onmouseout = () => button.innerText = '?';
+        optionsContainer.appendChild(button);
+    }
+
+    document.getElementById('feedback').innerText = '';
+    // 启用所有按钮
+    const buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(button => button.disabled = false);
+}
+
+// 检查答案函数
+function checkAnswer(selectedOption) {
+    // 禁用所有按钮以防止快速点击
+    const buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(button => button.disabled = true);
+
+    // 处理答案检查逻辑...
+    const feedback = document.getElementById('feedback');
+    if (selectedOption == currentQuestion.answer) {
+        feedback.innerText = '正确!';
+        feedback.style.color = 'green';
+    } else {
+        feedback.innerText = `错误! 正确答案是: ${currentQuestion.answer}`;
+        feedback.style.color = 'red';
+    }
+
+    // 显示下一题
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        setTimeout(() => showQuestion(questions[currentQuestionIndex]), 1000);
+    } else {
+        setTimeout(endGame, 1000);
+    }
+}
+
+// 格式化数字函数
 function formatNumber(number, allowDecimals) {
     if (allowDecimals) {
         return number.toFixed(1); // 保留一位小数
@@ -171,6 +202,9 @@ function formatNumber(number, allowDecimals) {
     }
 }
 
+// 在生成题目后调用显示题目
+const questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
+showQuestion(questions[0]);
 
 // 生成选项函数
 /**
