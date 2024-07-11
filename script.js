@@ -110,6 +110,7 @@ function endGame() {
 }
 
 // 生成题目函数
+// 生成问题的函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
 
@@ -143,16 +144,20 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
         }
 
+        // 如果不是除法，则处理小数
         if (operation !== 'division') {
             question.answer = allowDecimals ? parseFloat(answer.toFixed(2)) : answer;
         } else {
             question.answer = answer;
         }
 
+        // 如果是选择模式，生成选项
         if (mode === 'selection') {
             question.options = generateOptions(question.answer, allowDecimals);
         }
 
+        // 添加调试信息
+        console.log(`Generated question: ${question.question}, answer: ${question.answer}`); 
         questions.push(question);
     }
 
@@ -166,13 +171,13 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
  * @param {boolean} allowDecimals 是否允许小数
  * @returns {Array<number>} 返回包含正确答案和三个随机选项的数组
  */
+// 生成选项的函数
 function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
-    const maxDeviation = Math.floor(correctAnswer / 2); // 最大偏差值为正确答案的一半
+    const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
 
     while (options.length < 4) {
-        let deviation = getRandomNumber(maxDeviation, allowDecimals, false); // 生成偏差值
-        let option = correctAnswer - deviation;
+        let option = getRandomNumber(range, allowDecimals, false);
 
         // 如果允许小数，随机调整选项的小数部分
         if (allowDecimals) {
@@ -181,13 +186,14 @@ function generateOptions(correctAnswer, allowDecimals) {
         }
 
         // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option > 0) {
+        if (!options.includes(option) && option <= correctAnswer) {
             options.push(option);
         }
     }
 
     return options.sort(() => Math.random() - 0.5);
 }
+
 
 // 获取随机数函数
 /**
