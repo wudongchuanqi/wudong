@@ -8,7 +8,9 @@ let mode;
 // 历史统计数据
 let history = JSON.parse(localStorage.getItem('history')) || [];
 
+// 开始游戏函数
 function startGame() {
+    // 获取用户选择的设置
     const operation = document.getElementById('operation').value;
     const range = parseInt(document.getElementById('range').value);
     const resultRange = parseInt(document.getElementById('resultRange').value);
@@ -18,21 +20,25 @@ function startGame() {
     const allowNegative = document.getElementById('allowNegative').checked;
     mode = document.getElementById('mode').value;
 
+    // 生成题目
     questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
     currentQuestionIndex = 0;
     score = 0;
 
+    // 隐藏设置表单，显示游戏界面
     document.getElementById('settingsForm').style.display = 'none';
     document.getElementById('game').style.display = 'block';
     showQuestion();
 }
 
+// 显示当前问题函数
 function showQuestion() {
     const currentQuestion = questions[currentQuestionIndex];
     document.getElementById('question').innerText = currentQuestion.question;
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
 
+    // 根据互动模式显示选项或答案
     if (mode === 'selection') {
         currentQuestion.options.forEach(option => {
             const button = document.createElement('button');
@@ -55,6 +61,7 @@ function showQuestion() {
     startTimer();
 }
 
+// 开始计时器函数
 function startTimer() {
     let timeLeft = timePerQuestion;
     document.getElementById('time').innerText = timeLeft;
@@ -69,6 +76,7 @@ function startTimer() {
     }, 1000);
 }
 
+// 检查答案函数
 function checkAnswer(selectedOption) {
     clearInterval(timer);
 
@@ -93,6 +101,7 @@ function checkAnswer(selectedOption) {
     }
 }
 
+// 结束游戏函数
 function endGame() {
     document.getElementById('game').style.display = 'none';
     document.getElementById('settingsForm').style.display = 'block';
@@ -100,6 +109,7 @@ function endGame() {
     saveHistory(score, questions.length);
 }
 
+// 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
 
@@ -149,6 +159,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
     return questions;
 }
 
+// 生成选项函数
 function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
 
@@ -163,6 +174,7 @@ function generateOptions(correctAnswer, allowDecimals) {
     return options.sort(() => Math.random() - 0.5);
 }
 
+// 获取随机数函数
 function getRandomNumber(max, allowDecimals, allowNegative) {
     let number = Math.random() * max;
 
@@ -177,6 +189,7 @@ function getRandomNumber(max, allowDecimals, allowNegative) {
     return number;
 }
 
+// 保存历史记录函数
 function saveHistory(score, total) {
     const record = { date: new Date().toLocaleString(), score, total };
     history.push(record);
@@ -184,6 +197,7 @@ function saveHistory(score, total) {
     displayHistory();
 }
 
+// 显示历史记录函数
 function displayHistory() {
     const historyTable = document.createElement('table');
     historyTable.innerHTML = `
@@ -208,6 +222,7 @@ function displayHistory() {
     document.getElementById('history').appendChild(historyTable);
 }
 
+// 清除历史记录函数
 function clearHistory() {
     localStorage.removeItem('history');
     history = [];
