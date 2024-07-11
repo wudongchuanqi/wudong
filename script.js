@@ -160,13 +160,28 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 }
 
 // 生成选项函数
+/**
+ * 生成选项函数
+ * @param {number} correctAnswer 正确答案
+ * @param {boolean} allowDecimals 是否允许小数
+ * @returns {Array<number>} 返回包含正确答案和三个随机选项的数组
+ */
 function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
+    const maxDeviation = Math.floor(correctAnswer / 2); // 最大偏差值为正确答案的一半
 
     while (options.length < 4) {
-        let option = getRandomNumber(correctAnswer * 2, allowDecimals, false);
+        let deviation = getRandomNumber(maxDeviation, allowDecimals, false); // 生成偏差值
+        let option = correctAnswer - deviation;
 
-        if (!options.includes(option)) {
+        // 如果允许小数，随机调整选项的小数部分
+        if (allowDecimals) {
+            option += Math.random().toFixed(2) * (Math.random() < 0.5 ? 1 : -1);
+            option = parseFloat(option.toFixed(2));
+        }
+
+        // 保证生成的选项不重复且不超过正确答案
+        if (!options.includes(option) && option > 0) {
             options.push(option);
         }
     }
@@ -175,19 +190,30 @@ function generateOptions(correctAnswer, allowDecimals) {
 }
 
 // 获取随机数函数
+/**
+ * 生成随机数函数
+ * @param {number} max 最大值
+ * @param {boolean} allowDecimals 是否允许小数
+ * @param {boolean} allowNegative 是否允许负数
+ * @returns {number} 返回生成的随机数
+ */
 function getRandomNumber(max, allowDecimals, allowNegative) {
     let number = Math.random() * max;
 
+    // 如果不允许小数，则取整
     if (!allowDecimals) {
         number = Math.floor(number);
     }
 
+    // 如果允许负数，则随机生成正负号
     if (allowNegative && Math.random() < 0.5) {
         number = -number;
     }
 
+    // 返回生成的随机数
     return number;
 }
+
 
 // 保存历史记录函数
 function saveHistory(score, total) {
