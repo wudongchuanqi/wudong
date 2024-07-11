@@ -91,6 +91,7 @@ function endGame() {
 // 修改生成题目的函数，保留一位小数
 // 修改生成题目的函数，处理负数和小数的显示
 // 修改生成题目的函数，处理负数和小数的显示
+// 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
 
@@ -134,8 +135,17 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
         questions.push(question);
     }
-    // 返回生成的题目数组
+
     return questions;
+}
+
+// 格式化数字函数
+function formatNumber(number, allowDecimals) {
+    if (allowDecimals) {
+        return number.toFixed(1); // 保留一位小数
+    } else {
+        return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
+    }
 }
 
 // 显示题目函数
@@ -193,18 +203,10 @@ function checkAnswer(selectedOption) {
     }
 }
 
-// 格式化数字函数
-function formatNumber(number, allowDecimals) {
-    if (allowDecimals) {
-        return number.toFixed(1); // 保留一位小数
-    } else {
-        return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
-    }
-}
-
 // 在生成题目后调用显示题目
 const questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
 showQuestion(questions[0]);
+
 
 // 生成选项函数
 /**
