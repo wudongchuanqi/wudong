@@ -167,7 +167,7 @@ function formatNumber(number, allowDecimals) {
     if (allowDecimals) {
         return number.toFixed(1); // 保留一位小数
     } else {
-        return number.toString(); // 转换为字符串
+        return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
     }
 }
 
