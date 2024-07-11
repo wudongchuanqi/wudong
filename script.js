@@ -91,9 +91,12 @@ function endGame() {
 // 修改生成题目的函数，保留一位小数
 // 修改生成题目的函数，处理负数和小数的显示
 // 修改生成题目的函数，处理负数和小数的显示
+let questions = [];
+let currentQuestionIndex = 0;
+
 // 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
-    const questions = [];
+    const newQuestions = [];
 
     for (let i = 0; i < numQuestions; i++) {
         let question = {};
@@ -133,10 +136,10 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             question.options = generateOptions(question.answer, allowDecimals);
         }
 
-        questions.push(question);
+        newQuestions.push(question);
     }
 
-    return questions;
+    return newQuestions;
 }
 
 // 格式化数字函数
@@ -186,11 +189,11 @@ function checkAnswer(selectedOption) {
 
     // 处理答案检查逻辑...
     const feedback = document.getElementById('feedback');
-    if (selectedOption == currentQuestion.answer) {
+    if (selectedOption == questions[currentQuestionIndex].answer) {
         feedback.innerText = '正确!';
         feedback.style.color = 'green';
     } else {
-        feedback.innerText = `错误! 正确答案是: ${currentQuestion.answer}`;
+        feedback.innerText = `错误! 正确答案是: ${questions[currentQuestionIndex].answer}`;
         feedback.style.color = 'red';
     }
 
@@ -203,10 +206,9 @@ function checkAnswer(selectedOption) {
     }
 }
 
-// 在生成题目后调用显示题目
-const questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
-showQuestion(questions[0]);
-
+// 初始化题目并显示第一题
+questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
+showQuestion(questions[currentQuestionIndex]);
 
 // 生成选项函数
 /**
