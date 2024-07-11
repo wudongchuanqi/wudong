@@ -1,52 +1,9 @@
-// 全局变量
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 let timer;
 let timePerQuestion;
-let mode = 'selection'; // 或 'answer'，根据你的需求设置默认值
-let operation = 'addition'; // 或 'subtraction', 'multiplication', 'division', 'mixed'
-let range = 10; // 题目范围，根据你的需求设置
-let resultRange = 10; // 答案范围，根据你的需求设置
-let numQuestions = 10; // 题目数量，根据你的需求设置
-let allowDecimals = false; // 是否允许小数，根据你的需求设置
-let allowNegative = false; // 是否允许负数，根据你的需求设置
-
-// 初始化题目并显示第一题
-questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
-showQuestion(questions[currentQuestionIndex]);
-
-// 显示题目函数
-function showQuestion(questionObj) {
-    // 检查 questionObj 是否为有效对象
-    if (!questionObj || !questionObj.question) {
-        console.error("Invalid question object:", questionObj);
-        return;
-    }
-
-    // 显示题目内容
-    const questionElement = document.getElementById('question');
-    questionElement.textContent = questionObj.question;
-
-    // 如果是选择模式，显示选项
-    if (mode === 'selection') {
-        const options = questionObj.options;
-        const optionElements = document.querySelectorAll('#options button');
-        
-        for (let i = 0; i < optionElements.length; i++) {
-            const optionElement = optionElements[i];
-            optionElement.textContent = options[i];
-
-            // 为每个按钮设置点击事件
-            optionElement.onclick = function() {
-                const selectedOption = parseFloat(optionElement.textContent.trim());
-                checkAnswer(selectedOption);
-            };
-        }
-    }
-}
-
-
+let mode;
 
 // 历史统计数据
 let history = JSON.parse(localStorage.getItem('history')) || [];
@@ -119,12 +76,34 @@ function startTimer() {
     }, 1000);
 }
 
+// 检查答案函数
+function checkAnswer(selectedOption) {
+    clearInterval(timer);
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const feedback = document.getElementById('feedback');
+
+    if (parseFloat(selectedOption) === currentQuestion.answer) {
+        score++;
+        feedback.innerText = '正确!';
+        feedback.style.color = 'green';
+    } else {
+        feedback.innerText = `错误! 正确答案是: ${currentQuestion.answer}`;
+        feedback.style.color = 'red';
+    }
+
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < questions.length) {
+        setTimeout(showQuestion, 1000);
+    } else {
+        setTimeout(endGame, 1000);
+    }
+}
 
 
 // 结束游戏函数
 function endGame() {
-    clearTimeout(timer);
-    // 显示结果或重置游戏
     document.getElementById('game').style.display = 'none';
     document.getElementById('settingsForm').style.display = 'block';
     alert(`游戏结束! 你的得分是 ${score} / ${questions.length}`);
@@ -136,9 +115,8 @@ function endGame() {
 // 修改生成题目的函数，保留一位小数
 // 修改生成题目的函数，处理负数和小数的显示
 // 修改生成题目的函数，处理负数和小数的显示
-// 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
-    const newQuestions = []; // 使用新的变量来存储生成的题目
+    const questions = [];
 
     for (let i = 0; i < numQuestions; i++) {
         let question = {};
@@ -178,13 +156,13 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             question.options = generateOptions(question.answer, allowDecimals);
         }
 
-        newQuestions.push(question);
+        questions.push(question);
     }
 
-    return newQuestions;
+    return questions;
 }
 
-// 格式化数字函数
+// 格式化数字，处理负数和小数的显示
 function formatNumber(number, allowDecimals) {
     if (allowDecimals) {
         return number.toFixed(1); // 保留一位小数
@@ -192,116 +170,6 @@ function formatNumber(number, allowDecimals) {
         return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
     }
 }
-
-// 生成选项函数
-function generateOptions(correctAnswer, allowDecimals) {
-    const options = [correctAnswer];
-    const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
-
-    while (options.length < 4) {
-        let option = getRandomNumber(range, allowDecimals, false);
-
-        // 如果允许小数，随机调整选项的小数部分
-        if (allowDecimals) {
-            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
-            option = parseFloat(option.toFixed(1));
-        }
-
-        // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option > 0 && option <= correctAnswer) { // 确保选项不重复且在合理范围内
-            options.push(option);
-        }
-    }
-
-    return options.sort(() => Math.random() - 0.5);
-}
-
-// 获取随机数函数
-function getRandomNumber(max, allowDecimals, allowNegative) {
-    let number = Math.random() * max;
-    // 如果不允许小数，则取整
-    if (!allowDecimals) {
-        number = Math.floor(number);
-    } else {
-        number = parseFloat(number.toFixed(1)); // 保留一位小数
-    }
-    // 如果允许负数，则随机生成正负号
-    if (allowNegative && Math.random() < 0.5) {
-        number = -number;
-    }
-    // 返回生成的随机数
-    return number;
-}
-
-// 显示题目函数
-function showQuestion(question) {
-    document.getElementById('question').innerText = question.question;
-    const optionsContainer = document.getElementById('options');
-    optionsContainer.innerHTML = '';
-
-    if (mode === 'selection') {
-        question.options.forEach(option => {
-            const button = document.createElement('button');
-            button.innerText = option;
-            button.classList.add('option-button');
-            button.onclick = () => checkAnswer(option);
-            optionsContainer.appendChild(button);
-        });
-    } else if (mode === 'answer') {
-        const button = document.createElement('button');
-        button.innerText = '?';
-        button.classList.add('option-button');
-        button.onclick = () => checkAnswer(question.answer);
-        button.onmouseover = () => button.innerText = question.answer;
-        button.onmouseout = () => button.innerText = '?';
-        optionsContainer.appendChild(button);
-    }
-
-    document.getElementById('feedback').innerText = '';
-    // 启用所有按钮
-    const buttons = document.querySelectorAll('.option-button');
-    buttons.forEach(button => button.disabled = false);
-}
-
-// 检查答案函数
-function checkAnswer(selectedOption) {
-    // 检查当前问题索引是否有效
-    if (currentQuestionIndex >= questions.length || currentQuestionIndex < 0) {
-        console.error("Invalid current question index:", currentQuestionIndex);
-        return;
-    }
-
-    const currentQuestion = questions[currentQuestionIndex];
-
-    // 检查当前问题对象是否有效
-    if (!currentQuestion || !currentQuestion.answer) {
-        console.error("Invalid question object:", currentQuestion);
-        return;
-    }
-
-    // 检查选项是否正确
-    if (mode === 'selection') {
-        if (selectedOption === currentQuestion.answer) {
-            score++;
-        }
-    } else if (mode === 'answer') {
-        const userAnswer = parseFloat(selectedOption);
-        if (userAnswer === currentQuestion.answer) {
-            score++;
-        }
-    }
-
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        showQuestion(questions[currentQuestionIndex]);
-    } else {
-        endGame();
-    }
-}
-
-// 初始化题目并显示第一题
-questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
-showQuestion(questions[currentQuestionIndex]);
 
 
 // 生成选项函数
