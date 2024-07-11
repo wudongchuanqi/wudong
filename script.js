@@ -31,12 +31,21 @@ function showQuestion(questionObj) {
     // 如果是选择模式，显示选项
     if (mode === 'selection') {
         const options = questionObj.options;
-        for (let i = 0; i < options.length; i++) {
-            const optionElement = document.getElementById(`option${i + 1}`);
+        const optionElements = document.querySelectorAll('#options button');
+        
+        for (let i = 0; i < optionElements.length; i++) {
+            const optionElement = optionElements[i];
             optionElement.textContent = options[i];
+
+            // 为每个按钮设置点击事件
+            optionElement.onclick = function() {
+                const selectedOption = parseFloat(optionElement.textContent.trim());
+                checkAnswer(selectedOption);
+            };
         }
     }
 }
+
 
 
 // 历史统计数据
@@ -114,6 +123,8 @@ function startTimer() {
 
 // 结束游戏函数
 function endGame() {
+    clearTimeout(timer);
+    // 显示结果或重置游戏
     document.getElementById('game').style.display = 'none';
     document.getElementById('settingsForm').style.display = 'block';
     alert(`游戏结束! 你的得分是 ${score} / ${questions.length}`);
@@ -254,26 +265,37 @@ function showQuestion(question) {
 
 // 检查答案函数
 function checkAnswer(selectedOption) {
-    // 禁用所有按钮以防止快速点击
-    const buttons = document.querySelectorAll('.option-button');
-    buttons.forEach(button => button.disabled = true);
-
-    // 处理答案检查逻辑...
-    const feedback = document.getElementById('feedback');
-    if (selectedOption == questions[currentQuestionIndex].answer) {
-        feedback.innerText = '正确!';
-        feedback.style.color = 'green';
-    } else {
-        feedback.innerText = `错误! 正确答案是: ${questions[currentQuestionIndex].answer}`;
-        feedback.style.color = 'red';
+    // 检查当前问题索引是否有效
+    if (currentQuestionIndex >= questions.length || currentQuestionIndex < 0) {
+        console.error("Invalid current question index:", currentQuestionIndex);
+        return;
     }
 
-    // 显示下一题
+    const currentQuestion = questions[currentQuestionIndex];
+
+    // 检查当前问题对象是否有效
+    if (!currentQuestion || !currentQuestion.answer) {
+        console.error("Invalid question object:", currentQuestion);
+        return;
+    }
+
+    // 检查选项是否正确
+    if (mode === 'selection') {
+        if (selectedOption === currentQuestion.answer) {
+            score++;
+        }
+    } else if (mode === 'answer') {
+        const userAnswer = parseFloat(selectedOption);
+        if (userAnswer === currentQuestion.answer) {
+            score++;
+        }
+    }
+
     currentQuestionIndex++;
     if (currentQuestionIndex < questions.length) {
-        setTimeout(() => showQuestion(questions[currentQuestionIndex]), 1000);
+        showQuestion(questions[currentQuestionIndex]);
     } else {
-        setTimeout(endGame, 1000);
+        endGame();
     }
 }
 
