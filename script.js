@@ -113,6 +113,7 @@ function endGame() {
 // 生成题目函数
 // 生成问题的函数
 // 修改生成题目的函数，保留一位小数
+// 修改生成题目的函数，处理负数和小数的显示
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
 
@@ -124,34 +125,32 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a + b;
-            question.question = `${a.toFixed(1)} + ${b.toFixed(1)} = ?`; // 保留一位小数
+            question.question = `${formatNumber(a)} + ${formatNumber(b)} = ?`;
         } else if (operation === 'subtraction') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a - b;
-            question.question = `${a.toFixed(1)} - ${b.toFixed(1)} = ?`; // 保留一位小数
+            question.question = `${formatNumber(a)} - ${formatNumber(b)} = ?`;
         } else if (operation === 'multiplication') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a * b;
-            question.question = `${a.toFixed(1)} * ${b.toFixed(1)} = ?`; // 保留一位小数
+            question.question = `${formatNumber(a)} * ${formatNumber(b)} = ?`;
         } else if (operation === 'division') {
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
             a = b * answer;
-            question.question = `${a.toFixed(1)} / ${b.toFixed(1)} = ?`; // 保留一位小数
+            question.question = `${formatNumber(a)} / ${formatNumber(b)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
             return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
         }
 
-        if (operation !== 'division') {
-            question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer; // 保留一位小数
-        } else {
-            question.answer = answer;
-        }
+        // 处理答案的格式，小数保留一位
+        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
 
+        // 如果是选择模式，生成选项
         if (mode === 'selection') {
             question.options = generateOptions(question.answer, allowDecimals);
         }
@@ -160,6 +159,14 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
     }
 
     return questions;
+}
+// 格式化数字，处理负数和小数的显示
+function formatNumber(number) {
+    if (allowDecimals) {
+        return number.toFixed(1); // 保留一位小数
+    } else {
+        return number.toString(); // 转换为字符串
+    }
 }
 
 // 生成选项函数
@@ -179,8 +186,8 @@ function generateOptions(correctAnswer, allowDecimals) {
 
         // 如果允许小数，随机调整选项的小数部分
         if (allowDecimals) {
-            option += Math.random().toFixed(2) * (Math.random() < 0.5 ? 1 : -1);
-            option = parseFloat(option.toFixed(2));
+            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
+            option = parseFloat(option.toFixed(1));
         }
 
         // 保证生成的选项不重复且不超过正确答案
@@ -209,8 +216,7 @@ function getRandomNumber(max, allowDecimals, allowNegative) {
     if (!allowDecimals) {
         number = Math.floor(number);
     } else {
-        number = parseFloat(number.toFixed(1)); 
-    // 保留一位小数
+        number = parseFloat(number.toFixed(1)); // 保留一位小数
     }
     // 如果允许负数，则随机生成正负号
     if (allowNegative && Math.random() < 0.5) {
