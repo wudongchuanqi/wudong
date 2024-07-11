@@ -1,3 +1,4 @@
+// 全局变量声明
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
@@ -146,6 +147,46 @@ function formatNumber(number, allowDecimals) {
     } else {
         return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
     }
+}
+
+// 生成选项函数
+function generateOptions(correctAnswer, allowDecimals) {
+    const options = [correctAnswer];
+    const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
+
+    while (options.length < 4) {
+        let option = getRandomNumber(range, allowDecimals, false);
+
+        // 如果允许小数，随机调整选项的小数部分
+        if (allowDecimals) {
+            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
+            option = parseFloat(option.toFixed(1));
+        }
+
+        // 保证生成的选项不重复且不超过正确答案
+        if (!options.includes(option) && option > 0 && option <= correctAnswer) { // 确保选项不重复且在合理范围内
+            options.push(option);
+        }
+    }
+
+    return options.sort(() => Math.random() - 0.5);
+}
+
+// 获取随机数函数
+function getRandomNumber(max, allowDecimals, allowNegative) {
+    let number = Math.random() * max;
+    // 如果不允许小数，则取整
+    if (!allowDecimals) {
+        number = Math.floor(number);
+    } else {
+        number = parseFloat(number.toFixed(1)); // 保留一位小数
+    }
+    // 如果允许负数，则随机生成正负号
+    if (allowNegative && Math.random() < 0.5) {
+        number = -number;
+    }
+    // 返回生成的随机数
+    return number;
 }
 
 // 显示题目函数
