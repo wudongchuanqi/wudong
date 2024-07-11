@@ -117,8 +117,7 @@ function endGame() {
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
 const questions = [];
 
-scss
-复制代码
+
 for (let i = 0; i < numQuestions; i++) {
     let question = {};
     let a, b, answer;
@@ -190,8 +189,7 @@ const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
 while (options.length < 4) {
 let option = getRandomNumber(range, allowDecimals, false);
 
-scss
-复制代码
+
  // 如果允许小数，随机调整选项的小数部分
  if (allowDecimals) {
      option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
