@@ -93,7 +93,7 @@ function endGame() {
 // 修改生成题目的函数，处理负数和小数的显示
 // 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
-    const newQuestions = [];
+    const newQuestions = []; // 使用新的变量来存储生成的题目
 
     for (let i = 0; i < numQuestions; i++) {
         let question = {};
@@ -206,6 +206,7 @@ function checkAnswer(selectedOption) {
 // 初始化题目并显示第一题
 questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
 showQuestion(questions[currentQuestionIndex]);
+
 
 // 生成选项函数
 /**
