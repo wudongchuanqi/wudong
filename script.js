@@ -78,8 +78,6 @@ function startTimer() {
 
 // 检查答案函数
 function checkAnswer(selectedOption) {
-    if (currentQuestionIndex >= questions.length) return; // 避免重复点击
-
     clearInterval(timer);
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -159,7 +157,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         }
 
         // 处理答案的格式，小数保留一位
-        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : Math.round(answer);
+        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
 
         questions.push(question);
     }
@@ -183,7 +181,6 @@ function formatNumber(number, allowDecimals) {
  * @param {boolean} allowDecimals 是否允许小数
  * @returns {Array<number>} 返回包含正确答案和三个随机选项的数组
  */
-// 生成选项的函数
 function generateOptions(correctAnswer, allowDecimals) {
     const options = [correctAnswer];
     const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
@@ -193,17 +190,35 @@ function generateOptions(correctAnswer, allowDecimals) {
 
         // 如果允许小数，随机调整选项的小数部分
         if (allowDecimals) {
-            option += parseFloat((Math.random() * (Math.random < 0.5 ? 1 : -1)).toFixed(1));
+            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
             option = parseFloat(option.toFixed(1));
         }
 
         // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option > 0) {
+        if (!options.includes(option) && option !== correctAnswer) {
             options.push(option);
         }
     }
 
-    return options.sort(() => Math.random() - 0.5); // 打乱选项顺序
+    return shuffleArray(options);
+}
+
+// 获取随机数函数
+function getRandomNumber(range, allowDecimals, allowNegative) {
+    let number = Math.random() * range;
+    if (allowNegative) {
+        number = (Math.random() < 0.5 ? -1 : 1) * number;
+    }
+    return allowDecimals ? parseFloat(number.toFixed(1)) : Math.round(number);
+}
+
+// 洗牌函数
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
 // 保存历史记录函数
@@ -246,30 +261,5 @@ function clearHistory() {
     displayHistory();
 }
 
-// 获取随机数字函数
-/**
- * 获取随机数函数
- * @param {number} range 范围
- * @param {boolean} allowDecimals 是否允许小数
- * @param {boolean} allowNegative 是否允许负数
- * @returns {number} 返回一个随机数
- */
-function getRandomNumber(range, allowDecimals, allowNegative) {
-    let number = Math.random() * range;
-    if (allowDecimals) {
-        number = parseFloat(number.toFixed(1));
-    } else {
-        number = Math.floor(number);
-    }
-
-    if (allowNegative && Math.random() < 0.5) {
-        number = -number;
-    }
-
-    return number;
-}
-
-// 页面加载完毕后，显示历史记录
-window.onload = () => {
-    displayHistory();
-};
+// 初始加载显示历史记录
+displayHistory();
