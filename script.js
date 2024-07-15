@@ -78,6 +78,8 @@ function startTimer() {
 
 // 检查答案函数
 function checkAnswer(selectedOption) {
+    if (currentQuestionIndex >= questions.length) return; // 避免重复点击
+
     clearInterval(timer);
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -101,7 +103,6 @@ function checkAnswer(selectedOption) {
     }
 }
 
-
 // 结束游戏函数
 function endGame() {
     document.getElementById('game').style.display = 'none';
@@ -113,7 +114,6 @@ function endGame() {
 // 生成题目函数
 // 生成问题的函数
 // 修改生成题目的函数，保留一位小数
-// 修改生成题目的函数，处理负数和小数的显示
 // 修改生成题目的函数，处理负数和小数的显示
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
     const questions = [];
@@ -159,7 +159,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         }
 
         // 处理答案的格式，小数保留一位
-        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
+        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : Math.round(answer);
 
         questions.push(question);
     }
@@ -175,7 +175,6 @@ function formatNumber(number, allowDecimals) {
         return number.toString().replace('.0', ''); // 转换为字符串，并移除.0
     }
 }
-
 
 // 生成选项函数
 /**
@@ -194,12 +193,18 @@ function generateOptions(correctAnswer, allowDecimals) {
 
         // 如果允许小数，随机调整选项的小数部分
         if (allowDecimals) {
-            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
+            option += parseFloat((Math.random() * (Math.random < 0.5 ? 1 : -1)).toFixed(1));
             option = parseFloat(option.toFixed(1));
         }
 
         // 保证生成的选项不重复且不超过正确答案
-        if (!options.includes(option) && option >
+        if (!options.includes(option) && option > 0) {
+            options.push(option);
+        }
+    }
+
+    return options.sort(() => Math.random() - 0.5); // 打乱选项顺序
+}
 
 // 保存历史记录函数
 function saveHistory(score, total) {
@@ -241,5 +246,30 @@ function clearHistory() {
     displayHistory();
 }
 
-// 初始加载显示历史记录
-displayHistory();
+// 获取随机数字函数
+/**
+ * 获取随机数函数
+ * @param {number} range 范围
+ * @param {boolean} allowDecimals 是否允许小数
+ * @param {boolean} allowNegative 是否允许负数
+ * @returns {number} 返回一个随机数
+ */
+function getRandomNumber(range, allowDecimals, allowNegative) {
+    let number = Math.random() * range;
+    if (allowDecimals) {
+        number = parseFloat(number.toFixed(1));
+    } else {
+        number = Math.floor(number);
+    }
+
+    if (allowNegative && Math.random() < 0.5) {
+        number = -number;
+    }
+
+    return number;
+}
+
+// 页面加载完毕后，显示历史记录
+window.onload = () => {
+    displayHistory();
+};
