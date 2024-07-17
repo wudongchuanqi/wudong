@@ -132,6 +132,9 @@ function showQuestion() {
         document.getElementById('question').innerText = currentQuestion.question;
         if (mode === 'selection') {
             showSelectionOptions(currentQuestion.answer);
+            document.getElementById('options').style.display = 'block';
+        } else {
+            document.getElementById('options').style.display = 'none';
         }
         document.getElementById('timer').style.display = 'block';
         document.getElementById('feedback').innerText = '';
@@ -141,19 +144,27 @@ function showQuestion() {
     }
 }
 
+
 function showSelectionOptions(correctAnswer) {
-    const options = [];
-    options.push(correctAnswer);
-    while (options.length < 4) {
-        const option = (Math.random() * 20).toFixed(2); // 随机生成选项
-        if (!options.includes(option)) {
-            options.push(option);
+    const options = new Set();
+    options.add(correctAnswer); // 添加正确答案到选项集合
+    while (options.size < 4) {
+        let option = (Math.random() * 20).toFixed(2); // 随机生成选项
+        if (allowDecimals) {
+            option = parseFloat(option).toFixed(2);
+        } else {
+            option = parseInt(option);
         }
+        if (allowNegative && Math.random() < 0.5) {
+            option = -option;
+        }
+        options.add(option); // 添加生成的选项到集合
     }
-    options.sort(() => Math.random() - 0.5); // 打乱顺序
+    const optionsArray = Array.from(options);
+    optionsArray.sort(() => Math.random() - 0.5); // 打乱顺序
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
-    options.forEach(option => {
+    optionsArray.forEach(option => {
         const button = document.createElement('button');
         button.innerText = option;
         button.classList.add('option-button');
@@ -161,6 +172,7 @@ function showSelectionOptions(correctAnswer) {
         optionsContainer.appendChild(button);
     });
 }
+
 
 function startTimer() {
     let timeLeft = timePerQuestion;
