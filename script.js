@@ -56,7 +56,6 @@ function generateQuestions(operation, range, resultRange, numQuestions) {
 }
 
 function generateAdditionQuestion(range, resultRange) {
-    // 生成加法题目
     let a = getRandomNumber(range);
     let b = getRandomNumber(resultRange);
     let answer = a + b;
@@ -67,7 +66,6 @@ function generateAdditionQuestion(range, resultRange) {
 }
 
 function generateSubtractionQuestion(range, resultRange) {
-    // 生成减法题目
     let a = getRandomNumber(range);
     let b = getRandomNumber(resultRange);
     let answer = a - b;
@@ -78,7 +76,6 @@ function generateSubtractionQuestion(range, resultRange) {
 }
 
 function generateMultiplicationQuestion(range, resultRange) {
-    // 生成乘法题目
     let a = getRandomNumber(range);
     let b = getRandomNumber(resultRange);
     let answer = a * b;
@@ -89,10 +86,9 @@ function generateMultiplicationQuestion(range, resultRange) {
 }
 
 function generateDivisionQuestion(range, resultRange) {
-    // 生成除法题目
     let a = getRandomNumber(range);
     let b = getRandomNumber(resultRange);
-    let answer = (a / b).toFixed(2); // 保留两位小数
+    let answer = (a / b).toFixed(2);
     return {
         question: `${a} / ${b} = ?`,
         answer: answer
@@ -100,7 +96,6 @@ function generateDivisionQuestion(range, resultRange) {
 }
 
 function generateMixedQuestion(range, resultRange) {
-    // 生成混合题目
     const operations = ['addition', 'subtraction', 'multiplication', 'division'];
     const operation = operations[Math.floor(Math.random() * operations.length)];
     switch (operation) {
@@ -144,24 +139,23 @@ function showQuestion() {
     }
 }
 
-
 function showSelectionOptions(correctAnswer) {
     const options = new Set();
-    options.add(correctAnswer); // 添加正确答案到选项集合
+    options.add(correctAnswer);
     while (options.size < 4) {
-        let option = (Math.random() * 20).toFixed(2); // 随机生成选项
-        if (allowDecimals) {
-            option = parseFloat(option).toFixed(2);
-        } else {
+        let option = (Math.random() * 20).toFixed(2);
+        if (!allowDecimals) {
             option = parseInt(option);
+        } else {
+            option = parseFloat(option).toFixed(2);
         }
         if (allowNegative && Math.random() < 0.5) {
             option = -option;
         }
-        options.add(option); // 添加生成的选项到集合
+        options.add(option);
     }
     const optionsArray = Array.from(options);
-    optionsArray.sort(() => Math.random() - 0.5); // 打乱顺序
+    optionsArray.sort(() => Math.random() - 0.5);
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
     optionsArray.forEach(option => {
@@ -172,7 +166,6 @@ function showSelectionOptions(correctAnswer) {
         optionsContainer.appendChild(button);
     });
 }
-
 
 function startTimer() {
     let timeLeft = timePerQuestion;
@@ -192,7 +185,6 @@ function checkAnswer(selectedAnswer) {
     const currentQuestion = questions[currentQuestionIndex];
     const correctAnswer = currentQuestion.answer;
     if (mode === 'answer' && selectedAnswer === null) {
-        // 在作答模式中，selectedAnswer 为 null 表示用户超时未作答
         selectedAnswer = prompt(currentQuestion.question);
     }
     if (selectedAnswer == correctAnswer) {
@@ -215,7 +207,7 @@ function logHistory(question, selectedAnswer, correctAnswer) {
 
 function nextQuestion() {
     clearInterval(timer);
-    checkAnswer(null); // 在作答模式中，null 表示用户点击“下一题”按钮跳过题目
+    checkAnswer(null);
 }
 
 function endGame() {
