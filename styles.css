@@ -6,6 +6,7 @@ body {
     height: 100vh; /* 设置视口高度 */
     background-color: #f9f9f9; /* 背景颜色 */
     margin: 0; /* 移除默认边距 */
+    overflow-y: auto; /* 允许整个页面上下滚动 */
 }
 
 .container {
