@@ -12,6 +12,8 @@ body {
 .container {
     text-align: center; /* 居中文本 */
     max-width: 400px; /* 最大宽度 */
+    max-height: 100vh; /* 设置最大高度为视口高度 ** 限制容器高度 */
+    overflow-y: auto; /* 如果内容超出高度，显示滚动条 */
     background-color: #fff; /* 背景颜色 */
     padding: 20px; /* 内边距 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
@@ -19,7 +21,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden; /* 防止内部上下滚动 */
-    max-height: 90vh; /* 限制容器高度 */
 }
 
 h1 {
