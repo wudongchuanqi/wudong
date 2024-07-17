@@ -124,7 +124,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a + b;
-            question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`; // 生成加法题目
+            question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
@@ -135,12 +135,12 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                 b = temp;
             }
             answer = a - b;
-            question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`; // 生成减法题目
+            question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
             a = getRandomNumber(range, allowDecimals, allowNegative);
             b = getRandomNumber(range, allowDecimals, allowNegative);
             answer = a * b;
-            question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`; // 生成乘法题目
+            question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             // 避免除数为0，重新生成直到不为0
             do {
@@ -149,7 +149,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
             answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
             a = b * answer;
-            question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`; // 生成除法题目
+            question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
@@ -158,6 +158,11 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
         // 处理答案的格式，小数保留一位
         question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
+
+        // 如果是选择模式，生成选项
+        if (mode === 'selection') {
+            question.options = generateOptions(question.answer, allowDecimals);
+        }
 
         questions.push(question);
     }
@@ -200,25 +205,32 @@ function generateOptions(correctAnswer, allowDecimals) {
         }
     }
 
-    return shuffleArray(options);
+    return shuffleArray(options); // 随机打乱选项顺序
 }
 
-// 获取随机数函数
-function getRandomNumber(range, allowDecimals, allowNegative) {
-    let number = Math.random() * range;
-    if (allowNegative) {
-        number = (Math.random() < 0.5 ? -1 : 1) * number;
-    }
-    return allowDecimals ? parseFloat(number.toFixed(1)) : Math.round(number);
-}
-
-// 洗牌函数
+// 工具函数：随机打乱数组顺序
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+// 生成随机数函数
+function getRandomNumber(range, allowDecimals, allowNegative) {
+    let number = Math.random() * range;
+    if (allowDecimals) {
+        number = parseFloat(number.toFixed(1)); // 保留一位小数
+    } else {
+        number = Math.floor(number);
+    }
+
+    if (allowNegative && Math.random() < 0.5) {
+        number = -number;
+    }
+
+    return number;
 }
 
 // 保存历史记录函数
@@ -231,35 +243,21 @@ function saveHistory(score, total) {
 
 // 显示历史记录函数
 function displayHistory() {
-    const historyTable = document.createElement('table');
-    historyTable.innerHTML = `
-        <tr>
-            <th>日期</th>
-            <th>分数</th>
-            <th>总题数</th>
-        </tr>
-    `;
-
+    const historyContainer = document.getElementById('history');
+    historyContainer.innerHTML = '<h3>历史记录</h3>';
     history.forEach(record => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${record.date}</td>
-            <td>${record.score}</td>
-            <td>${record.total}</td>
-        `;
-        historyTable.appendChild(row);
+        const recordElement = document.createElement('div');
+        recordElement.innerText = `${record.date} - 得分: ${record.score}/${record.total}`;
+        historyContainer.appendChild(recordElement);
     });
-
-    document.getElementById('history').innerHTML = '';
-    document.getElementById('history').appendChild(historyTable);
 }
 
 // 清除历史记录函数
 function clearHistory() {
-    localStorage.removeItem('history');
     history = [];
+    localStorage.removeItem('history');
     displayHistory();
 }
 
-// 初始加载显示历史记录
-displayHistory();
+// 页面加载完成后显示历史记录
+window.onload = displayHistory;
