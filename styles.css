@@ -90,21 +90,32 @@ button:hover {
     margin-top: 10px; /* 顶部外边距 */
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+    margin: 0;
+}
+
 #history {
-    flex-grow: 1; /* 占据剩余空间 */
-    margin-top: 20px; /* 顶部外边距 */
-    max-height: 200px; /* 最大高度 */
+    flex-grow: 1;
+    margin-top: 20px;
+    max-height: 200px;
 }
 
 #history div {
-    border-bottom: 1px solid #ccc; /* 底部边框 */
-    padding: 5px; /* 内边距 */
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
 }
 
 #history div:nth-child(even) {
-    background-color: #f2f2f2; /* 偶数行背景色 */
+    background-color: #f2f2f2;
 }
 
 #history div:hover {
-    background-color: #ddd; /* 悬停状态下的背景色 */
+    background-color: #ddd;
 }
+
