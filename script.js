@@ -121,25 +121,34 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         let a, b, answer;
 
         if (operation === 'addition') {
-            a = getRandomNumber(range, allowDecimals, allowNegative);
-            b = getRandomNumber(range, allowDecimals, allowNegative);
-            answer = a + b;
+            do {
+                a = getRandomNumber(range, allowDecimals, allowNegative);
+                b = getRandomNumber(range, allowDecimals, allowNegative);
+                answer = a + b;
+            } while (Math.abs(answer) > resultRange); // 确保结果在指定范围内
+
             question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
-            a = getRandomNumber(range, allowDecimals, allowNegative);
-            b = getRandomNumber(range, allowDecimals, allowNegative);
-            // 确保减法结果为非负数
-            if (!allowNegative && a < b) {
-                const temp = a;
-                a = b;
-                b = temp;
-            }
-            answer = a - b;
+            do {
+                a = getRandomNumber(range, allowDecimals, allowNegative);
+                b = getRandomNumber(range, allowDecimals, allowNegative);
+                // 确保减法结果为非负数
+                if (!allowNegative && a < b) {
+                    const temp = a;
+                    a = b;
+                    b = temp;
+                }
+                answer = a - b;
+            } while (Math.abs(answer) > resultRange); // 确保结果在指定范围内
+
             question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
-            a = getRandomNumber(range, allowDecimals, allowNegative);
-            b = getRandomNumber(range, allowDecimals, allowNegative);
-            answer = a * b;
+            do {
+                a = getRandomNumber(range, allowDecimals, allowNegative);
+                b = getRandomNumber(range, allowDecimals, allowNegative);
+                answer = a * b;
+            } while (Math.abs(answer) > resultRange); // 确保结果在指定范围内
+
             question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             // 避免除数为0，重新生成直到不为0
