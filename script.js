@@ -121,42 +121,34 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         let a, b, answer;
 
         if (operation === 'addition') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                answer = a + b;
-            } while (answer > resultRange); // 确保加法结果在 resultRange 范围内
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = a + b;
             question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                // 确保减法结果为非负数
-                if (!allowNegative && a < b) {
-                    const temp = a;
-                    a = b;
-                    b = temp;
-                }
-                answer = a - b;
-            } while (Math.abs(answer) > resultRange); // 确保减法结果在 resultRange 范围内
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            // 确保减法结果为非负数
+            if (!allowNegative && a < b) {
+                const temp = a;
+                a = b;
+                b = temp;
+            }
+            answer = a - b;
             question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                answer = a * b;
-            } while (answer > resultRange); // 确保乘法结果在 resultRange 范围内
+            a = getRandomNumber(range, allowDecimals, allowNegative);
+            b = getRandomNumber(range, allowDecimals, allowNegative);
+            answer = a * b;
             question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
+            // 避免除数为0，重新生成直到不为0
             do {
-                // 避免除数为0，重新生成直到不为0
-                do {
-                    b = getRandomNumber(range, allowDecimals, allowNegative);
-                } while (b === 0);
+                b = getRandomNumber(range, allowDecimals, allowNegative);
+            } while (b === 0);
 
-                answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
-                a = b * answer;
-            } while (a > resultRange); // 确保除法结果在 resultRange 范围内
+            answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
+            a = b * answer;
             question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
@@ -166,6 +158,11 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
         // 处理答案的格式，小数保留一位
         question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
+
+        // 如果是选择模式，生成选项
+        if (mode === 'selection') {
+            question.options = generateOptions(question.answer, allowDecimals);
+        }
 
         questions.push(question);
     }
