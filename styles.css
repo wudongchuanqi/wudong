@@ -92,7 +92,6 @@ button:hover {
 
 #history {
     flex-grow: 1; /* 占据剩余空间 */
-    overflow-y: auto; /* 垂直滚动条 */
     margin-top: 20px; /* 顶部外边距 */
     max-height: 200px; /* 最大高度 */
 }
