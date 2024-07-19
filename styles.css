@@ -1,59 +1,59 @@
 body {
-    font-family: 'Comic Sans MS', cursive, sans-serif; /* 设置字体样式 */
-    display: flex; /* 使用flex布局 */
-    justify-content: center; /* 水平居中 */
-    align-items: center; /* 垂直居中 */
-    height: 100vh; /* 设置视口高度 */
-    background-color: #f9f9f9; /* 背景颜色 */
-    margin: 0; /* 移除默认边距 */
-    overflow-y: auto; /* 允许整个页面上下滚动 */
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+    margin: 0;
+    overflow-y: auto;
 }
 
 .container {
-    text-align: center; /* 居中文本 */
-    max-width: 400px; /* 最大宽度 */
-    max-height: 80vh; /* 设置最大高度为视口高度的80% */
-    overflow-y: auto; /* 如果内容超出高度，显示滚动条 */
-    background-color: #fff; /* 背景颜色 */
-    padding: 20px; /* 内边距 */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
-    border-radius: 15px; /* 圆角 */
+    text-align: center;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
     display: flex;
-    flex-direction: column;   
+    flex-direction: column;
 }
 
 h1 {
-    color: #FF5722; /* 标题颜色 */
+    color: #FF5722;
 }
 
 form label {
-    display: block; /* 块级元素 */
-    margin: 10px 0 5px; /* 外边距 */
-    text-align: left; /* 左对齐 */
-    padding-left: 20px; /* 左侧内边距 */
+    display: block;
+    margin: 10px 0 5px;
+    text-align: left;
+    padding-left: 20px;
 }
 
 form input, form select {
-    width: calc(100% - 40px); /* 宽度适应新内边距 */
-    padding: 10px; /* 内边距 */
-    margin-bottom: 10px; /* 底部外边距 */
-    border: 1px solid #ccc; /* 边框 */
-    border-radius: 5px; /* 圆角 */
-    margin-left: 20px; /* 左边距 */
+    width: calc(100% - 40px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-left: 20px;
 }
 
 button {
-    background-color: #FF5722; /* 按钮背景色 */
-    color: white; /* 按钮文字颜色 */
-    border: none; /* 无边框 */
-    padding: 10px 20px; /* 内边距 */
-    font-size: 16px; /* 字体大小 */
-    border-radius: 5px; /* 圆角 */
-    cursor: pointer; /* 鼠标指针样式 */
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: #E64A19; /* 悬停状态下的背景色 */
+    background-color: #E64A19;
 }
 
 #game {
@@ -61,33 +61,33 @@ button:hover {
 }
 
 #question {
-    font-size: 24px; /* 字体大小 */
-    margin-bottom: 10px; /* 底部外边距 */
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
 .option-button {
-    background-color: #FF5722; /* 按钮背景色 */
-    color: white; /* 按钮文字颜色 */
-    border: none; /* 无边框 */
-    padding: 10px 20px; /* 内边距 */
-    font-size: 16px; /* 字体大小 */
-    border-radius: 5px; /* 圆角 */
-    cursor: pointer; /* 鼠标指针样式 */
-    margin: 5px; /* 外边距 */
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
 }
 
 .option-button:hover {
-    background-color: #E64A19; /* 悬停状态下的背景色 */
+    background-color: #E64A19;
 }
 
 #feedback {
-    font-size: 18px; /* 字体大小 */
-    margin-top: 10px; /* 顶部外边距 */
+    font-size: 18px;
+    margin-top: 10px;
 }
 
 #time {
-    font-size: 18px; /* 字体大小 */
-    margin-top: 10px; /* 顶部外边距 */
+    font-size: 18px;
+    margin-top: 10px;
 }
 
 #history {
@@ -118,8 +118,4 @@ button:hover {
 
 body, html {
     height: 100%;
-}
-
-.hidden {
-    display: none;
 }
