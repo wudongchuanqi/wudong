@@ -1,196 +1,80 @@
-// 定义鼓励语数组
-const messages = [
-    '太棒了!', '优秀!', '满分，继续努力!', '你真棒!', '你太厉害了!',
-    '干得漂亮!', '完美!', '太好了!', '真是个天才!', '出色的表现!',
-    '继续保持!', '超级!', '你做得很好!', '棒极了!', '你真是高手!',
-    '令人惊叹!', '非常棒!', '你做到了!', '你真是太聪明了!', '绝对出色!'
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学口算游戏</title>
+    <link rel="stylesheet" href="styles.css"> <!-- 引入外部CSS样式表 -->
+    <style>
+        /* 定义鼓励语弹窗样式 */
+        .encouragement-popup {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-size: 24px;
+            text-align: center;
+            z-index: 1000;
+            animation: popupAnimation 1s ease;
+        }
 
-// 结束游戏函数
-function endGame(score, totalQuestions) {
-    document.getElementById('game').style.display = 'none';
-    document.getElementById('settingsForm').style.display = 'block';
-
-    // 随机选择一个鼓励语
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
-    // 计算总得分并生成消息
-    const finalScore = 100; // 固定得分为100分
-    const message = `游戏结束! 你的得分是: ${finalScore}分，正确率为: ${(score / totalQuestions) * 100}%\n${randomMessage}`;
-
-    // 显示鼓励语弹窗
-    showEncouragementPopup(message);
-
-    // 保存历史记录
-    saveHistory(finalScore, totalQuestions);
-}
-
-// 显示鼓励语弹窗函数
-function showEncouragementPopup(message) {
-    const popup = document.createElement('div');
-    popup.className = 'encouragement-popup';
-    popup.innerText = message;
-    document.body.appendChild(popup);
-
-    // 设置3秒后自动消失
-    setTimeout(() => {
-        document.body.removeChild(popup);
-    }, 3000);
-}
-
-// 生成题目函数
-function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
-    const questions = [];
-
-    for (let i = 0; i < numQuestions; i++) {
-        let question = {};
-        let a, b, answer;
-
-        if (operation === 'addition') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                answer = a + b;
-            } while (Math.abs(answer) > resultRange);
-
-            question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
-        } else if (operation === 'subtraction') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                if (!allowNegative && a < b) {
-                    const temp = a;
-                    a = b;
-                    b = temp;
-                }
-                answer = a - b;
-            } while (Math.abs(answer) > resultRange);
-
-            question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
-        } else if (operation === 'multiplication') {
-            do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-                answer = a * b;
-            } while (Math.abs(answer) > resultRange);
-
-            question.question = `${formatNumber(a, allowDecimals)} × ${formatNumber(b, allowDecimals)} = ?`;
-        } else if (operation === 'division') {
-            if (allowDecimals) {
-                do {
-                    do {
-                        b = getRandomNumber(range, allowDecimals, allowNegative);
-                    } while (b === 0);
-                    a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
-                    answer = a / b;
-                } while (Math.abs(answer) > resultRange);
-            } else {
-                do {
-                    do {
-                        b = getRandomNumber(range, false, allowNegative);
-                    } while (b <= 0);
-                    a = b * Math.floor(Math.random() * (range / b)) + b;
-                    answer = a / b;
-                } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange);
+        @keyframes popupAnimation {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -60%);
             }
-
-            question.question = `${formatNumber(a, allowDecimals)} ÷ ${formatNumber(b, allowDecimals)} = ?`;
-        } else if (operation === 'mixed') {
-            const operations = ['addition', 'subtraction', 'multiplication', 'division'];
-            const randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            const mixedQuestion = generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
-            question = mixedQuestion;
-            answer = mixedQuestion.answer;
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
         }
-
-        question.answer = parseFloat(answer.toFixed(1));
-        question.options = generateOptions(answer, range, allowDecimals, allowNegative);
-        questions.push(question);
-    }
-
-    return questions;
-}
-
-function getRandomNumber(range, allowDecimals, allowNegative) {
-    let number = Math.random() * range;
-    if (!allowDecimals) number = Math.round(number);
-    if (allowNegative && Math.random() < 0.5) number = -number;
-    return number;
-}
-
-function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
-    const options = new Set();
-    options.add(correctAnswer);
-
-    while (options.size < 4) {
-        let option = getRandomNumber(range * 2, allowDecimals, allowNegative);
-        if (option !== correctAnswer) {
-            options.add(option);
-        }
-    }
-
-    return Array.from(options);
-}
-
-function formatNumber(number, allowDecimals) {
-    return allowDecimals ? number.toFixed(1) : number.toString();
-}
-
-// 开始游戏函数
-function startGame() {
-    const operation = document.getElementById('operation').value;
-    const range = parseInt(document.getElementById('range').value);
-    const resultRange = parseInt(document.getElementById('resultRange').value);
-    const numQuestions = parseInt(document.getElementById('numQuestions').value);
-    const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value);
-    const allowDecimals = document.getElementById('allowDecimals').checked;
-    const allowNegative = document.getElementById('allowNegative').checked;
-
-    const questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
-
-    document.getElementById('settingsForm').style.display = 'none';
-    document.getElementById('game').style.display = 'block';
-    document.getElementById('question').innerHTML = questions[0].question;
-    document.getElementById('timer').innerHTML = `剩余时间：<span id="time">${timePerQuestion}</span>秒`;
-
-    // 显示选项
-    const optionsDiv = document.getElementById('options');
-    optionsDiv.innerHTML = '';
-    questions[0].options.forEach(option => {
-        const button = document.createElement('button');
-        button.innerText = option;
-        button.onclick = () => checkAnswer(option, questions[0].answer);
-        optionsDiv.appendChild(button);
-    });
-
-    // 启动定时器
-    let timeLeft = timePerQuestion;
-    const timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById('time').innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            endGame(0, numQuestions); // 时间到，游戏结束
-        }
-    }, 1000);
-}
-
-function checkAnswer(selectedAnswer, correctAnswer) {
-    if (selectedAnswer === correctAnswer) {
-        document.getElementById('feedback').innerText = '回答正确!';
-    } else {
-        document.getElementById('feedback').innerText = '回答错误!';
-    }
-}
-
-function saveHistory(score, totalQuestions) {
-    const historyDiv = document.getElementById('history');
-    const record = document.createElement('div');
-    record.innerText = `得分: ${score}, 总题目数: ${totalQuestions}`;
-    historyDiv.appendChild(record);
-}
-
-function clearHistory() {
-    const historyDiv = document.getElementById('history');
-    historyDiv.innerHTML = '';
-}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数学口算游戏</h1>
+        <form id="settingsForm">
+            <label for="operation">选择运算类型:</label>
+            <select id="operation">
+                <option value="addition">加法</option>
+                <option value="subtraction">减法</option>
+                <option value="multiplication">乘法</option>
+                <option value="division">除法</option>
+                <option value="mixed">混合运算</option>
+            </select>
+            <label for="mode">选择互动模式:</label>
+            <select id="mode">
+                <option value="answer">作答模式</option>
+                <option value="selection">选择模式</option>
+            </select>
+            <label for="range">选择数字范围:</label>
+            <input type="number" id="range" min="1" value="10">
+            <label for="resultRange">选择结果范围:</label>
+            <input type="number" id="resultRange" min="1" value="10">
+            <label for="numQuestions">选择题目数量:</label>
+            <input type="number" id="numQuestions" min="1" value="10">
+            <label for="timePerQuestion">每题答题时间（秒）:</label>
+            <input type="number" id="timePerQuestion" min="1" value="10">
+            <label for="allowDecimals">允许小数:</label>
+            <input type="checkbox" id="allowDecimals">
+            <label for="allowNegative">允许负数:</label>
+            <input type="checkbox" id="allowNegative">
+            <button type="button" onclick="startGame()">开始游戏</button>
+            <button type="button" onclick="clearHistory()">清除历史记录</button>
+        </form>
+        <div id="game" class="hidden">
+            <div id="question"></div>
+            <div id="options"></div>
+            <div id="timer">剩余时间：<span id="time">0</span>秒</div>
+            <div id="feedback"></div>
+        </div>
+        <div id="history"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
