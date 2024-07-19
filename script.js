@@ -179,12 +179,12 @@ function endGame() {
     }
 
     // 设置结果 div 的 HTML 内容，包含游戏结束信息、得分、正确率和鼓励信息
-    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${finalScore}分，正确率为: ${scorePercentage.toFixed(1)}%</p><p>${encouragement}</p>`;
+    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${score * (100 / questions.length)} 分，正确率为: ${scorePercentage.toFixed(1)}%</p><p>${encouragement}</p>`;
     // 将结果 div 添加到页面主体
     document.body.appendChild(result);
 
     // 将当前得分记录添加到历史记录数组，包含日期、得分和正确率
-    history.push({ date: new Date().toLocaleString(), score: finalScore, accuracy: scorePercentage.toFixed(1) });
+    history.push({ date: new Date().toLocaleString(), score: score * (100 / questions.length), accuracy: scorePercentage.toFixed(1) });
     // 将历史记录保存到本地存储
     localStorage.setItem('history', JSON.stringify(history));
 
@@ -237,29 +237,17 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         } else if (operation === 'division') {
             // 生成除法题目
             do {
+                a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
-            } while (b === 0);
-
-            do {
-                a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
+                if (b === 0) continue;
                 answer = a / b;
-            } while (!allowDecimals && !Number.isInteger(answer));
+            } while (Math.abs(answer) > resultRange);
 
             question.question = `${formatNumber(a, allowDecimals)} ÷ ${formatNumber(b, allowDecimals)} = ?`;
-        } else if (operation === 'mixed') {
-            // 生成混合题目
-            const operations = ['addition', 'subtraction', 'multiplication', 'division'];
-            const randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            const mixedQuestion = generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
-            question = mixedQuestion;
-            answer = mixedQuestion.answer;
         }
 
-        // 将答案保留一位小数
-        question.answer = parseFloat(answer.toFixed(1));
-        // 生成选项
-        question.options = generateOptions(answer, range, allowDecimals, allowNegative);
-        // 将题目添加到题目数组中
+        question.answer = allowDecimals ? parseFloat(answer.toFixed(2)) : Math.round(answer);
+        question.options = generateOptions(question.answer, allowDecimals);
         questions.push(question);
     }
 
@@ -268,95 +256,39 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
 // 生成随机数函数
 function getRandomNumber(range, allowDecimals, allowNegative) {
-    // 生成范围内的随机数
-    let number = Math.random() * range;
-    // 如果不允许小数，取整
-    if (!allowDecimals) number = Math.round(number);
-    // 如果允许负数，有50%几率取负
-    if (allowNegative && Math.random() < 0.5) number = -number;
-    return number;
-}
-
-// 生成选项函数
-function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
-    // 初始化选项集合
-    const options = new Set();
-    // 将正确答案添加到选项集合中
-    options.add(correctAnswer);
-
-    // 生成干扰项，直到选项集合大小为4
-    while (options.size < 4) {
-        let option = getRandomNumber(range * 2, allowDecimals, allowNegative);
-        if (option !== correctAnswer) {
-            options.add(option);
-        }
-    }
-
-    return Array.from(options);
+    let num = Math.random() * range;
+    if (!allowDecimals) num = Math.floor(num);
+    if (allowNegative && Math.random() > 0.5) num *= -1;
+    return num;
 }
 
 // 格式化数字函数
-function formatNumber(number, allowDecimals) {
-    // 如果允许小数，保留一位小数，否则返回整数
-    return allowDecimals ? number.toFixed(1) : number.toString();
+function formatNumber(num, allowDecimals) {
+    return allowDecimals ? num.toFixed(2) : num;
 }
 
-// 保存历史记录函数
-function saveHistory(score, totalQuestions) {
-    // 创建历史记录对象
-    const record = {
-        date: new Date().toLocaleString(),
-        score: score,
-        totalQuestions: totalQuestions
-    };
-    // 将历史记录添加到历史记录数组中
-    history.push(record);
-    // 将历史记录保存到本地存储中
-    localStorage.setItem('history', JSON.stringify(history));
-    // 显示历史记录
-    displayHistory();
-}
-
-// 清除历史记录函数
-function clearHistory() {
-    // 清空历史记录数组
-    history = [];
-    // 从本地存储中移除历史记录
-    localStorage.removeItem('history');
-    // 显示清空后的历史记录
-    displayHistory();
+// 生成选项函数
+function generateOptions(correctAnswer, allowDecimals) {
+    const options = [correctAnswer];
+    while (options.length < 4) {
+        let option = allowDecimals ? parseFloat((Math.random() * 10).toFixed(2)) : Math.floor(Math.random() * 10);
+        if (!options.includes(option)) options.push(option);
+    }
+    return options.sort(() => Math.random() - 0.5);
 }
 
 // 显示历史记录函数
 function displayHistory() {
-    // 获取历史记录容器元素
     const historyContainer = document.getElementById('history');
-    // 设置历史记录容器的初始内容，包括标题
-    historyContainer.innerHTML = '<h3>历史记录</h3>';
+    historyContainer.innerHTML = '';
 
-    // 如果没有历史记录，显示“暂无记录”的提示
-    if (history.length === 0) {
-        historyContainer.innerHTML += '<p>暂无记录</p>';
-    } else {
-        // 创建一个表格元素来展示历史记录
-        const table = document.createElement('table');
-        // 设置表格的表头
-        table.innerHTML = '<tr><th>日期</th><th>得分</th><th>正确率</th></tr>';
-        
-        // 遍历历史记录数组，为每条记录创建一行
-        history.forEach(record => {
-            const row = document.createElement('tr');
-            // 设置每行的内容，包含日期、得分和正确率
-            row.innerHTML = `<td>${record.date}</td><td>${record.score}</td><td>${record.accuracy}%</td>`;
-            // 将行添加到表格中
-            table.appendChild(row);
-        });
-        
-        // 将表格添加到历史记录容器中
-        historyContainer.appendChild(table);
-    }
+    history.forEach(record => {
+        const recordElement = document.createElement('div');
+        recordElement.classList.add('history-record');
+        recordElement.innerHTML = `<p>${record.date}</p><p>得分: ${record.score}，正确率: ${record.accuracy}%</p>`;
+        historyContainer.appendChild(recordElement);
+    });
 }
 
-
 // 页面加载时显示历史记录
-document.addEventListener('DOMContentLoaded', displayHistory);
+window.onload = displayHistory;
