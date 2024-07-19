@@ -10,6 +10,7 @@ let history = JSON.parse(localStorage.getItem('history')) || [];
 
 // 开始游戏函数
 function startGame() {
+    console.log('开始游戏按钮被点击');
     // 获取用户选择的设置
     const operation = document.getElementById('operation').value;
     const range = parseInt(document.getElementById('range').value);
@@ -22,6 +23,7 @@ function startGame() {
 
     // 生成题目
     questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
+    console.log('生成的题目:', questions);
     currentQuestionIndex = 0;
     score = 0;
 
@@ -32,12 +34,13 @@ function startGame() {
     }
 
     // 隐藏设置表单，显示游戏界面
-    document.getElementById('settingsForm').classList.add('hidden');
-    document.getElementById('game').classList.remove('hidden');
+    document.getElementById('settingsForm').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
 
     // 显示第一题
     showQuestion();
 }
+
 
 // 显示当前问题函数
 function showQuestion() {
