@@ -32,8 +32,8 @@ function startGame() {
     }
 
     // 隐藏设置表单，显示游戏界面
-    document.getElementById('settingsForm').style.display = 'none';
-    document.getElementById('game').style.display = 'block';
+    document.getElementById('settingsForm').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
 
     // 显示第一题
     showQuestion();
@@ -121,8 +121,8 @@ function checkAnswer(selectedOption) {
 
 // 结束游戏函数
 function endGame() {
-    document.getElementById('game').style.display = 'none';
-    document.getElementById('settingsForm').style.display = 'block';
+    document.getElementById('game').classList.add('hidden');
+    document.getElementById('settingsForm').classList.remove('hidden');
     alert(`游戏结束! 你的得分是 ${score} / ${questions.length}`);
     saveHistory(score, questions.length);
 }
@@ -169,99 +169,66 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                 b = getRandomNumber(range, allowDecimals, allowNegative);
             } while (b === 0);
 
-            answer = getRandomNumber(resultRange, allowDecimals, allowNegative);
-            a = b * answer;
+            do {
+                a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
+                answer = a / b;
+            } while (!allowDecimals && !Number.isInteger(answer));
+
             question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            return generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
+            const mixedQuestion = generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
+            question = mixedQuestion;
+            answer = mixedQuestion.answer;
         }
 
-        question.answer = allowDecimals ? parseFloat(answer.toFixed(1)) : answer;
-
-        if (mode === 'selection') {
-            question.options = generateOptions(question.answer, allowDecimals);
-        }
-
+        question.answer = parseFloat(answer.toFixed(2));
+        question.options = generateOptions(answer, range, allowDecimals, allowNegative);
         questions.push(question);
     }
 
     return questions;
 }
 
-// 格式化数字，处理负数和小数的显示
-function formatNumber(number, allowDecimals) {
-    if (allowDecimals) {
-        return number.toFixed(1);
-    } else {
-        return number.toString().replace('.0', '');
-    }
-}
-
-// 生成选项函数
-function generateOptions(correctAnswer, allowDecimals) {
-    const options = [correctAnswer];
-    const range = correctAnswer > 10 ? correctAnswer - 5 : correctAnswer;
-
-    while (options.length < 4) {
-        let option = getRandomNumber(range, allowDecimals, false);
-
-        if (allowDecimals) {
-            option += parseFloat((Math.random() * (Math.random() < 0.5 ? 1 : -1)).toFixed(1));
-            option = parseFloat(option.toFixed(1));
-        }
-
-        if (!options.includes(option) && option !== correctAnswer) {
-            options.push(option);
-        }
-    }
-
-    return shuffleArray(options);
-}
-
-// 工具函数：随机打乱数组顺序
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
 // 生成随机数函数
 function getRandomNumber(range, allowDecimals, allowNegative) {
     let number = Math.random() * range;
-    if (allowDecimals) {
-        number = parseFloat(number.toFixed(1));
-    } else {
-        number = Math.floor(number);
-    }
-
-    if (allowNegative && Math.random() < 0.5) {
-        number = -number;
-    }
-
+    if (!allowDecimals) number = Math.round(number);
+    if (allowNegative && Math.random() < 0.5) number = -number;
     return number;
 }
 
+// 生成选项函数
+function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
+    const options = new Set();
+    options.add(correctAnswer);
+
+    while (options.size < 4) {
+        let option = getRandomNumber(range * 2, allowDecimals, allowNegative);
+        if (option !== correctAnswer) {
+            options.add(option);
+        }
+    }
+
+    return Array.from(options);
+}
+
+// 格式化数字函数
+function formatNumber(number, allowDecimals) {
+    return allowDecimals ? number.toFixed(2) : number.toString();
+}
+
 // 保存历史记录函数
-function saveHistory(score, total) {
-    const record = { date: new Date().toLocaleString(), score, total };
+function saveHistory(score, totalQuestions) {
+    const record = {
+        date: new Date().toLocaleString(),
+        score: score,
+        totalQuestions: totalQuestions
+    };
     history.push(record);
     localStorage.setItem('history', JSON.stringify(history));
     displayHistory();
-}
-
-// 显示历史记录函数
-function displayHistory() {
-    const historyContainer = document.getElementById('history');
-    historyContainer.innerHTML = '<h3>历史记录</h3>';
-    history.forEach(record => {
-        const recordElement = document.createElement('div');
-        recordElement.innerText = `${record.date} - 得分: ${record.score}/${record.total}`;
-        historyContainer.appendChild(recordElement);
-    });
 }
 
 // 清除历史记录函数
@@ -271,5 +238,17 @@ function clearHistory() {
     displayHistory();
 }
 
-// 页面加载完成后显示历史记录
-window.onload = displayHistory;
+// 显示历史记录函数
+function displayHistory() {
+    const historyContainer = document.getElementById('history');
+    historyContainer.innerHTML = '';
+
+    history.forEach(record => {
+        const div = document.createElement('div');
+        div.innerText = `${record.date} - 得分: ${record.score} / ${record.totalQuestions}`;
+        historyContainer.appendChild(div);
+    });
+}
+
+// 页面加载时显示历史记录
+document.addEventListener('DOMContentLoaded', displayHistory);
