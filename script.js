@@ -166,7 +166,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                 answer = a * b;
             } while (Math.abs(answer) > resultRange);
 
-            question.question = `${formatNumber(a, allowDecimals)} * ${formatNumber(b, allowDecimals)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} × ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             do {
                 b = getRandomNumber(range, allowDecimals, allowNegative);
@@ -177,7 +177,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                 answer = a / b;
             } while (!allowDecimals && !Number.isInteger(answer));
 
-            question.question = `${formatNumber(a, allowDecimals)} / ${formatNumber(b, allowDecimals)} = ?`;
+            question.question = `${formatNumber(a, allowDecimals)} ÷ ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
