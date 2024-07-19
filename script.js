@@ -205,49 +205,88 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
         if (operation === 'addition') {
             // 生成加法题目
             do {
+                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
+                // 计算答案
                 answer = a + b;
-            } while (Math.abs(answer) > resultRange);
+            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
 
+            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
             // 生成减法题目
             do {
+                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
+                // 如果不允许负数，确保 a >= b
                 if (!allowNegative && a < b) {
                     const temp = a;
                     a = b;
                     b = temp;
                 }
+                // 计算答案
                 answer = a - b;
-            } while (Math.abs(answer) > resultRange);
+            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
 
+            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
             // 生成乘法题目
             do {
+                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
+                // 计算答案
                 answer = a * b;
-            } while (Math.abs(answer) > resultRange);
+            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
 
+            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} × ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             // 生成除法题目
             do {
-                a = getRandomNumber(range, allowDecimals, allowNegative);
+                // 生成一个非零的随机数作为除数
                 b = getRandomNumber(range, allowDecimals, allowNegative);
-                if (b === 0) continue;
-                answer = a / b;
-            } while (Math.abs(answer) > resultRange);
+            } while (b === 0); // 确保除数不为零
 
+            if (allowDecimals) {
+                // 如果允许小数，生成除法题目
+                do {
+                    // 生成随机数 a，使得 a = b * 随机数
+                    a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
+                    // 计算答案
+                    answer = a / b;
+                } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
+            } else {
+                // 如果不允许小数，生成能够整除的除法题目
+                do {
+                    // 生成随机数 a，使得 a 是 b 的整数倍
+                    a = getRandomNumber(range, allowDecimals, allowNegative) * b;
+                    // 计算答案
+                    answer = a / b;
+                } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange); // 确保答案为整数并在指定范围内
+            }
+
+            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} ÷ ${formatNumber(b, allowDecimals)} = ?`;
+        } else if (operation === 'mixed') {
+            // 生成混合题目
+            const operations = ['addition', 'subtraction', 'multiplication', 'division'];
+            // 随机选择一种运算类型
+            const randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            // 递归调用生成题目函数，生成混合运算的题目
+            const mixedQuestion = generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
+            question = mixedQuestion;
+            answer = mixedQuestion.answer;
         }
 
-        question.answer = allowDecimals ? parseFloat(answer.toFixed(2)) : Math.round(answer);
-        question.options = generateOptions(question.answer, allowDecimals);
+        // 将答案保留一位小数
+        question.answer = parseFloat(answer.toFixed(1));
+        // 生成选项
+        question.options = generateOptions(answer, range, allowDecimals, allowNegative);
+        // 将题目添加到题目数组中
         questions.push(question);
     }
 
@@ -256,25 +295,37 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
 
 // 生成随机数函数
 function getRandomNumber(range, allowDecimals, allowNegative) {
-    let num = Math.random() * range;
-    if (!allowDecimals) num = Math.floor(num);
-    if (allowNegative && Math.random() > 0.5) num *= -1;
-    return num;
-}
-
-// 格式化数字函数
-function formatNumber(num, allowDecimals) {
-    return allowDecimals ? num.toFixed(2) : num;
+    // 生成范围内的随机数
+    let number = Math.random() * range;
+    // 如果不允许小数，取整
+    if (!allowDecimals) number = Math.round(number);
+    // 如果允许负数，有50%几率取负
+    if (allowNegative && Math.random() < 0.5) number = -number;
+    return number;
 }
 
 // 生成选项函数
-function generateOptions(correctAnswer, allowDecimals) {
-    const options = [correctAnswer];
-    while (options.length < 4) {
-        let option = allowDecimals ? parseFloat((Math.random() * 10).toFixed(2)) : Math.floor(Math.random() * 10);
-        if (!options.includes(option)) options.push(option);
+function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
+    // 初始化选项集合
+    const options = new Set();
+    // 将正确答案添加到选项集合中
+    options.add(correctAnswer);
+
+    // 生成干扰项，直到选项集合大小为4
+    while (options.size < 4) {
+        let option = getRandomNumber(range * 2, allowDecimals, allowNegative);
+        if (option !== correctAnswer) {
+            options.add(option);
+        }
     }
-    return options.sort(() => Math.random() - 0.5);
+
+    return Array.from(options);
+}
+
+// 格式化数字函数
+function formatNumber(number, allowDecimals) {
+    // 如果允许小数，保留一位小数，否则返回整数
+    return allowDecimals ? number.toFixed(1) : number.toString();
 }
 
 // 显示历史记录函数
