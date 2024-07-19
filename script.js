@@ -265,8 +265,8 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                     do {
                         b = getRandomNumber(range, false, allowNegative);
                     } while (b <= 0); // 确保除数不为0且不为负数
-                    // 生成随机数 a，使得 a 是 b 的整数倍
-                    a = b * getRandomNumber(range, false, allowNegative);
+                    // 生成随机数 a，使得 a 是 b 的整数倍，且 a >= b
+                    a = b * Math.floor(Math.random() * (range / b)) + b;
                     // 计算答案
                     answer = a / b;
                 } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange); // 确保答案为整数并在指定范围内
