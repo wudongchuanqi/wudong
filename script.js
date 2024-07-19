@@ -158,163 +158,130 @@ function checkAnswer(selectedOption) {
     }
 }
 
+// 定义鼓励语数组
+const messages = [
+    '太棒了!', '优秀!', '满分，继续努力!', '你真棒!', '你太厉害了!',
+    '干得漂亮!', '完美!', '太好了!', '真是个天才!', '出色的表现!',
+    '继续保持!', '超级!', '你做得很好!', '棒极了!', '你真是高手!',
+    '令人惊叹!', '非常棒!', '你做到了!', '你真是太聪明了!', '绝对出色!'
+];
+
 // 结束游戏函数
-function endGame() {
-    // 隐藏游戏界面
+function endGame(score, totalQuestions) {
     document.getElementById('game').style.display = 'none';
-    // 显示设置表单
     document.getElementById('settingsForm').style.display = 'block';
-    
-    // 计算得分百分比
-    const scorePercentage = (score / questions.length) * 100;
-    // 将得分百分比四舍五入为整数
-    const finalScore = Math.round(scorePercentage);
-    
-    // 初始化鼓励信息为空
-    let encouragement = '';
 
-    // 如果得分是 100 分，随机选择一条鼓励信息
-    if (finalScore === 100) {
-        const messages =  [
-            '太棒了!', '优秀!', '满分，继续努力!', '真是完美无缺!', '你真是个天才!', 
-            '你真了不起!', '表现得真出色!', '你让我们刮目相看!', '出色的成绩!', 
-            '无可挑剔!', '简直令人惊叹!', '你是我们的骄傲!', '杰出的表现!', 
-            '你已经超越了极限!', '你达到了新的高度!', '你真是名不虚传!', '你值得最好的赞美!',
-            '你完成得如此完美!', '你真是无敌了!', '你的努力没有白费!'
-        ];
-        encouragement = messages[Math.floor(Math.random() * messages.length)];
-    }
+    // 随机选择一个鼓励语
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
-    // 弹出对话框显示游戏结束信息，包含得分、正确率和鼓励信息
-    alert(`游戏结束!\n你的得分是: ${finalScore} / ${questions.length}\n正确率为: ${scorePercentage.toFixed(1)}%\n${encouragement}`);
+    // 计算总得分并生成消息
+    const finalScore = 100; // 固定得分为100分
+    const message = `游戏结束! 你的得分是: ${finalScore}分，正确率为: ${(score / totalQuestions) * 100}%\n${randomMessage}`;
+
+    // 显示鼓励语弹窗
+    showEncouragementPopup(message);
 
     // 保存历史记录
-    saveHistory(finalScore, questions.length);
+    saveHistory(finalScore, totalQuestions);
+}
+
+// 显示鼓励语弹窗函数
+function showEncouragementPopup(message) {
+    const popup = document.createElement('div');
+    popup.className = 'encouragement-popup';
+    popup.innerText = message;
+    document.body.appendChild(popup);
+
+    // 设置3秒后自动消失
+    setTimeout(() => {
+        document.body.removeChild(popup);
+    }, 3000);
 }
 
 // 生成题目函数
 function generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative) {
-    // 初始化问题数组
     const questions = [];
 
-    // 根据运算类型生成题目
     for (let i = 0; i < numQuestions; i++) {
         let question = {};
         let a, b, answer;
 
         if (operation === 'addition') {
-            // 生成加法题目
             do {
-                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
-                // 计算答案
                 answer = a + b;
-            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
+            } while (Math.abs(answer) > resultRange);
 
-            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} + ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'subtraction') {
-            // 生成减法题目
             do {
-                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
-                // 如果不允许负数，确保 a >= b
                 if (!allowNegative && a < b) {
                     const temp = a;
                     a = b;
                     b = temp;
                 }
-                // 计算答案
                 answer = a - b;
-            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
+            } while (Math.abs(answer) > resultRange);
 
-            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} - ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'multiplication') {
-            // 生成乘法题目
             do {
-                // 生成两个随机数
                 a = getRandomNumber(range, allowDecimals, allowNegative);
                 b = getRandomNumber(range, allowDecimals, allowNegative);
-                // 计算答案
                 answer = a * b;
-            } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
+            } while (Math.abs(answer) > resultRange);
 
-            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} × ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
-            // 生成除法题目
             if (allowDecimals) {
-                // 如果允许小数，生成除法题目
                 do {
-                    // 生成非零的随机数作为除数
                     do {
                         b = getRandomNumber(range, allowDecimals, allowNegative);
                     } while (b === 0);
-                    // 生成随机数 a，使得 a = b * 随机数
                     a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
-                    // 计算答案
                     answer = a / b;
-                } while (Math.abs(answer) > resultRange); // 确保答案在指定范围内
+                } while (Math.abs(answer) > resultRange);
             } else {
-                // 如果不允许小数，生成能够整除的除法题目
                 do {
-                    // 生成非零的随机数作为除数
                     do {
                         b = getRandomNumber(range, false, allowNegative);
-                    } while (b <= 0); // 确保除数不为0且不为负数
-                    // 生成随机数 a，使得 a 是 b 的整数倍，且 a >= b
+                    } while (b <= 0);
                     a = b * Math.floor(Math.random() * (range / b)) + b;
-                    // 计算答案
                     answer = a / b;
-                } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange); // 确保答案为整数并在指定范围内
+                } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange);
             }
 
-            // 设置题目文本
             question.question = `${formatNumber(a, allowDecimals)} ÷ ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'mixed') {
-            // 生成混合题目
             const operations = ['addition', 'subtraction', 'multiplication', 'division'];
-            // 随机选择一种运算类型
             const randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            // 递归调用生成题目函数，生成混合运算的题目
             const mixedQuestion = generateQuestions(randomOperation, range, resultRange, 1, allowDecimals, allowNegative)[0];
             question = mixedQuestion;
             answer = mixedQuestion.answer;
         }
 
-        // 将答案保留一位小数
         question.answer = parseFloat(answer.toFixed(1));
-        // 生成选项
         question.options = generateOptions(answer, range, allowDecimals, allowNegative);
-        // 将题目添加到题目数组中
         questions.push(question);
     }
 
     return questions;
 }
 
-// 生成随机数函数
 function getRandomNumber(range, allowDecimals, allowNegative) {
-    // 生成范围内的随机数
     let number = Math.random() * range;
-    // 如果不允许小数，取整
     if (!allowDecimals) number = Math.round(number);
-    // 如果允许负数，有50%几率取负
     if (allowNegative && Math.random() < 0.5) number = -number;
     return number;
 }
 
-// 生成选项函数
 function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
-    // 初始化选项集合
     const options = new Set();
-    // 将正确答案添加到选项集合中
     options.add(correctAnswer);
 
-    // 生成干扰项，直到选项集合大小为4
     while (options.size < 4) {
         let option = getRandomNumber(range * 2, allowDecimals, allowNegative);
         if (option !== correctAnswer) {
@@ -325,10 +292,67 @@ function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
     return Array.from(options);
 }
 
-// 格式化数字函数
 function formatNumber(number, allowDecimals) {
-    // 如果允许小数，保留一位小数，否则返回整数
     return allowDecimals ? number.toFixed(1) : number.toString();
+}
+
+// 开始游戏函数
+function startGame() {
+    const operation = document.getElementById('operation').value;
+    const range = parseInt(document.getElementById('range').value);
+    const resultRange = parseInt(document.getElementById('resultRange').value);
+    const numQuestions = parseInt(document.getElementById('numQuestions').value);
+    const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value);
+    const allowDecimals = document.getElementById('allowDecimals').checked;
+    const allowNegative = document.getElementById('allowNegative').checked;
+
+    const questions = generateQuestions(operation, range, resultRange, numQuestions, allowDecimals, allowNegative);
+
+    document.getElementById('settingsForm').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('question').innerHTML = questions[0].question;
+    document.getElementById('timer').innerHTML = `剩余时间：<span id="time">${timePerQuestion}</span>秒`;
+
+    // 显示选项
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+    questions[0].options.forEach(option => {
+        const button = document.createElement('button');
+        button.innerText = option;
+        button.onclick = () => checkAnswer(option, questions[0].answer);
+        optionsDiv.appendChild(button);
+    });
+
+    // 启动定时器
+    let timeLeft = timePerQuestion;
+    const timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time').innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame(0, numQuestions); // 时间到，游戏结束
+        }
+    }, 1000);
+}
+
+function checkAnswer(selectedAnswer, correctAnswer) {
+    if (selectedAnswer === correctAnswer) {
+        document.getElementById('feedback').innerText = '回答正确!';
+    } else {
+        document.getElementById('feedback').innerText = '回答错误!';
+    }
+}
+
+function saveHistory(score, totalQuestions) {
+    const historyDiv = document.getElementById('history');
+    const record = document.createElement('div');
+    record.innerText = `得分: ${score}, 总题目数: ${totalQuestions}`;
+    historyDiv.appendChild(record);
+}
+
+function clearHistory() {
+    const historyDiv = document.getElementById('history');
+    historyDiv.innerHTML = '';
 }
 
 // 显示历史记录函数
