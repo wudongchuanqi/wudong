@@ -167,8 +167,6 @@ function endGame() {
     const scorePercentage = (score / questions.length) * 100;
     // 将得分百分比四舍五入为整数
     const finalScore = Math.round(scorePercentage);
-    // 创建一个新的 div 元素来显示游戏结果
-    const result = document.createElement('div');
     // 初始化鼓励信息为空
     let encouragement = '';
 
@@ -178,10 +176,11 @@ function endGame() {
         encouragement = messages[Math.floor(Math.random() * messages.length)];
     }
 
-    // 设置结果 div 的 HTML 内容，包含游戏结束信息、得分、正确率和鼓励信息
-    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${score * (100 / questions.length)} 分，正确率为: ${scorePercentage.toFixed(1)}%</p><p>${encouragement}</p>`;
-    // 将结果 div 添加到页面主体
-    document.body.appendChild(result);
+    // 设置结果消息内容
+    const resultMessage = `游戏结束!\n你的得分是: ${score * (100 / questions.length)} 分，正确率为: ${scorePercentage.toFixed(1)}%\n${encouragement}`;
+    
+    // 显示对话弹窗
+    alert(resultMessage);
 
     // 将当前得分记录添加到历史记录数组，包含日期、得分和正确率
     history.push({ date: new Date().toLocaleString(), score: score * (100 / questions.length), accuracy: scorePercentage.toFixed(1) });
