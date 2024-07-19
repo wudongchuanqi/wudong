@@ -263,8 +263,8 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
                 do {
                     // 生成非零的随机数作为除数
                     do {
-                        b = getRandomNumber(range, allowDecimals, allowNegative);
-                    } while (b === 0);
+                        b = getRandomNumber(range, false, allowNegative);
+                    } while (b <= 0); // 确保除数不为0且不为负数
                     // 生成随机数 a，使得 a 是 b 的整数倍
                     a = b * getRandomNumber(range, false, allowNegative);
                     // 计算答案
