@@ -162,11 +162,14 @@ function checkAnswer(selectedOption) {
 function endGame() {
     // 隐藏游戏界面
     document.getElementById('game').style.display = 'none';
-
+    // 显示设置表单
+    document.getElementById('settingsForm').style.display = 'block';
+    
     // 计算得分百分比
     const scorePercentage = (score / questions.length) * 100;
     // 将得分百分比四舍五入为整数
     const finalScore = Math.round(scorePercentage);
+    
     // 初始化鼓励信息为空
     let encouragement = '';
 
@@ -176,19 +179,11 @@ function endGame() {
         encouragement = messages[Math.floor(Math.random() * messages.length)];
     }
 
-    // 设置结果消息内容
-    const resultMessage = `游戏结束!\n你的得分是: ${score * (100 / questions.length)} 分，正确率为: ${scorePercentage.toFixed(1)}%\n${encouragement}`;
-    
-    // 显示对话弹窗
-    alert(resultMessage);
+    // 弹出对话框显示游戏结束信息，包含得分、正确率和鼓励信息
+    alert(`游戏结束!\n你的得分是: ${finalScore} / ${questions.length}\n正确率为: ${scorePercentage.toFixed(1)}%\n${encouragement}`);
 
-    // 将当前得分记录添加到历史记录数组，包含日期、得分和正确率
-    history.push({ date: new Date().toLocaleString(), score: score * (100 / questions.length), accuracy: scorePercentage.toFixed(1) });
-    // 将历史记录保存到本地存储
-    localStorage.setItem('history', JSON.stringify(history));
-
-    // 显示更新后的历史记录
-    displayHistory();
+    // 保存历史记录
+    saveHistory(finalScore, questions.length);
 }
 
 // 生成题目函数
