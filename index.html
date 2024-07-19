@@ -5,22 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数学口算游戏</title>
     <link rel="stylesheet" href="styles.css"> <!-- 引入外部CSS样式表 -->
-    <style>
-        /* 定义鼓励语弹窗样式 */
-        .encouragement-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 24px;
-            z-index: 1000;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -45,8 +29,6 @@
             <input type="number" id="resultRange" min="1" value="10">
             <label for="numQuestions">选择题目数量:</label>
             <input type="number" id="numQuestions" min="1" value="10">
-            <label for="totalTime">请设置答题时间（秒）:</label>
-            <input type="number" id="totalTime" min="1" value="100">
             <label for="timePerQuestion">每题答题时间（秒）:</label>
             <input type="number" id="timePerQuestion" min="1" value="10">
             <label for="allowDecimals">允许小数:</label>
@@ -63,7 +45,6 @@
             <div id="feedback"></div>
         </div>
         <div id="history"></div>
-        <div id="popup" class="encouragement-popup hidden"></div>
     </div>
     <script src="script.js"></script>
 </body>
