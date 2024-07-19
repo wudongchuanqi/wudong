@@ -160,13 +160,36 @@ function checkAnswer(selectedOption) {
 
 // 结束游戏函数
 function endGame() {
-    // 隐藏游戏界面，显示设置表单
-    document.getElementById('game').classList.add('hidden');
-    document.getElementById('settingsForm').classList.remove('hidden');
-    // 显示游戏结束得分
-    alert(`游戏结束! 你的得分是 ${score} / ${questions.length}`);
-    // 保存历史记录
-    saveHistory(score, questions.length);
+    // 隐藏游戏界面
+    document.getElementById('game').style.display = 'none';
+
+    // 计算得分百分比
+    const scorePercentage = (score / questions.length) * 100;
+    // 将得分百分比四舍五入为整数
+    const finalScore = Math.round(scorePercentage);
+    // 创建一个新的 div 元素来显示游戏结果
+    const result = document.createElement('div');
+    // 初始化鼓励信息为空
+    let encouragement = '';
+
+    // 如果得分是 100 分，随机选择一条鼓励信息
+    if (finalScore === 100) {
+        const messages = ['太棒了!', '优秀!', '满分，继续努力!'];
+        encouragement = messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    // 设置结果 div 的 HTML 内容，包含游戏结束信息、得分、正确率和鼓励信息
+    result.innerHTML = `<h2>游戏结束!</h2><p>你的得分是: ${finalScore}分，正确率为: ${scorePercentage.toFixed(1)}%</p><p>${encouragement}</p>`;
+    // 将结果 div 添加到页面主体
+    document.body.appendChild(result);
+
+    // 将当前得分记录添加到历史记录数组，包含日期、得分和正确率
+    history.push({ date: new Date().toLocaleString(), score: finalScore, accuracy: scorePercentage.toFixed(1) });
+    // 将历史记录保存到本地存储
+    localStorage.setItem('history', JSON.stringify(history));
+
+    // 显示更新后的历史记录
+    displayHistory();
 }
 
 // 生成题目函数
@@ -308,16 +331,32 @@ function clearHistory() {
 function displayHistory() {
     // 获取历史记录容器元素
     const historyContainer = document.getElementById('history');
-    // 清空历史记录容器
-    historyContainer.innerHTML = '';
+    // 设置历史记录容器的初始内容，包括标题
+    historyContainer.innerHTML = '<h3>历史记录</h3>';
 
-    // 遍历历史记录数组，显示每条记录
-    history.forEach(record => {
-        const div = document.createElement('div');
-        div.innerText = `${record.date} - 得分: ${record.score} / ${record.totalQuestions}`;
-        historyContainer.appendChild(div);
-    });
+    // 如果没有历史记录，显示“暂无记录”的提示
+    if (history.length === 0) {
+        historyContainer.innerHTML += '<p>暂无记录</p>';
+    } else {
+        // 创建一个表格元素来展示历史记录
+        const table = document.createElement('table');
+        // 设置表格的表头
+        table.innerHTML = '<tr><th>日期</th><th>得分</th><th>正确率</th></tr>';
+        
+        // 遍历历史记录数组，为每条记录创建一行
+        history.forEach(record => {
+            const row = document.createElement('tr');
+            // 设置每行的内容，包含日期、得分和正确率
+            row.innerHTML = `<td>${record.date}</td><td>${record.score}</td><td>${record.accuracy}%</td>`;
+            // 将行添加到表格中
+            table.appendChild(row);
+        });
+        
+        // 将表格添加到历史记录容器中
+        historyContainer.appendChild(table);
+    }
 }
+
 
 // 页面加载时显示历史记录
 document.addEventListener('DOMContentLoaded', displayHistory);
