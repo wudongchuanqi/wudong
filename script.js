@@ -246,14 +246,13 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             question.question = `${formatNumber(a, allowDecimals)} × ${formatNumber(b, allowDecimals)} = ?`;
         } else if (operation === 'division') {
             // 生成除法题目
-            do {
-                // 生成一个非零的随机数作为除数
-                b = getRandomNumber(range, allowDecimals, allowNegative);
-            } while (b === 0); // 确保除数不为零
-
             if (allowDecimals) {
                 // 如果允许小数，生成除法题目
                 do {
+                    // 生成非零的随机数作为除数
+                    do {
+                        b = getRandomNumber(range, allowDecimals, allowNegative);
+                    } while (b === 0);
                     // 生成随机数 a，使得 a = b * 随机数
                     a = b * getRandomNumber(resultRange, allowDecimals, allowNegative);
                     // 计算答案
@@ -262,8 +261,12 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             } else {
                 // 如果不允许小数，生成能够整除的除法题目
                 do {
+                    // 生成非零的随机数作为除数
+                    do {
+                        b = getRandomNumber(range, allowDecimals, allowNegative);
+                    } while (b === 0);
                     // 生成随机数 a，使得 a 是 b 的整数倍
-                    a = getRandomNumber(range, allowDecimals, allowNegative) * b;
+                    a = b * getRandomNumber(range, false, allowNegative);
                     // 计算答案
                     answer = a / b;
                 } while (!Number.isInteger(answer) || Math.abs(answer) > resultRange); // 确保答案为整数并在指定范围内
