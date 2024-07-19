@@ -186,7 +186,7 @@ function generateQuestions(operation, range, resultRange, numQuestions, allowDec
             answer = mixedQuestion.answer;
         }
 
-        question.answer = parseFloat(answer.toFixed(2));
+        question.answer = parseFloat(answer.toFixed(1));
         question.options = generateOptions(answer, range, allowDecimals, allowNegative);
         questions.push(question);
     }
@@ -219,7 +219,7 @@ function generateOptions(correctAnswer, range, allowDecimals, allowNegative) {
 
 // 格式化数字函数
 function formatNumber(number, allowDecimals) {
-    return allowDecimals ? number.toFixed(2) : number.toString();
+    return allowDecimals ? number.toFixed(1) : number.toString();
 }
 
 // 保存历史记录函数
